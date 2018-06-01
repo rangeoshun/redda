@@ -26,10 +26,10 @@ const iff = (cond, then = noop, other = noop) => (cond ? then() : other())
 
 const has_length = arr => !!arr.length
 
-const reduce = ([first, ...rest] = [], acc = [], fn = noop) =>
+const reduce = ([first, ...rest] = [], acc = [], fn = noop, index_ = 0) =>
   iff(
     is_def(first) || has_length(rest),
-    () => reduce(rest, fn(acc, first), fn),
+    () => reduce(rest, fn(acc, first, index_), fn),
     () => acc
   )
 
@@ -63,11 +63,7 @@ const str_inner = html_arr => jsonml =>
 
 const start_tag = subj => add('<', transform_key(subj))
 
-const str_tag = html_arr => jsonml => {
-  let i = 0
-
-  iff(is_arr(get(jsonml, i)), str_inner(jsonml))
-}
+const str_tag = html_arr => jsonml => undef // TODO: find a reducer for the createTag port
 
 const jsnml_to_html_string = jsonml => undef
 

@@ -2,7 +2,7 @@
 
 import { undef } from './const'
 
-const noop = () => undef
+const noop = _ => undef
 
 const is_def = subj => subj !== undef
 
@@ -20,27 +20,46 @@ const add = (a, b) => a + b
 
 const str = subj => add(subj, '')
 
-const sym = subj =>
-  iff(is_fn(subj), () => sym(subj.name), () => Symbol.for(subj))
+const repl = (subj, char, with_char = '') => subj.replace(char, with_char)
 
-const sym_to_str = sym => Symbol.keyFor(str(sym))
+const sym = subj => iff(is_fn(subj), _ => sym(subj.name), _ => Symbol.for(subj))
 
-const has_length = arr => !!arr.length
+const sym_to_str = sym => Symbol.keyFor(sym)
 
-const reduce = ([first, ...rest] = [], acc = [], fn = noop, index_ = 0) =>
-  iff(
-    is_def(first) || has_length(rest),
-    () => reduce(rest, fn(acc, first, index_), fn),
-    () => acc
+const has_len = arr => !!arr.length
+
+const is_in = (subj, arr = []) =>
+  reduc(arr, false, (acc, item) => acc || item == subj)
+
+const join = (subj = [], joiner = '') => is_fn(subj.join) && subj.join(joiner)
+
+const uniq = subj =>
+  reduc(subj, [], (acc, item) =>
+    iff(is_in(item, acc), _ => acc, _ => [...acc, item])
   )
 
-const flow = (subj, ...fns) => reduce(fns, fn => fn(subj))
+const split = (subj = {}, by = '') =>
+  iff(is_def(by) && is_fn(subj.split), _ => subj.split(by))
+
+const reduc = ([first, ...rest] = [], acc = undef, fn = noop, index_ = 0) =>
+  iff(
+    is_def(first) || has_len(rest),
+    _ => reduc(rest, fn(acc, first, index_), fn),
+    _ => acc
+  )
+
+const flow = (...fns) => subj => reduc(fns, subj, (acc, fn) => fn(acc))
 
 const to_lower = subj => str(subj).toLowerCase()
 
-const sanitize = subj => escape(subj)
+const sanitize = subj =>
+  repl(subj, RegExp(`[${join(uniq(split(repl(subj, /[a-z-]/g, ''))))}]`, 'g'))
 
-const transform_key = subj => flow(subj, to_lower, sanitize)
+//  repl(subj, join(uniq(split(repl(subj, /\w-/g, '')))), '')
+
+const to_dashed = subj => repl(subj, '_', '-')
+
+const transform_key = subj => flow(to_lower, to_dashed, sanitize)(subj)
 
 const add_to = (arr, subj) => arr.push(subj)
 
@@ -59,13 +78,18 @@ export {
   is_fn,
   is_arr,
   is_obj,
+  has_len,
+  is_in,
+  join,
+  uniq,
   flow,
   to_lower,
   sanitize,
+  to_dashed,
   transform_key,
   add_to,
-  reduce,
+  reduc,
   keys_of,
   get,
-  has_length
+  repl
 }

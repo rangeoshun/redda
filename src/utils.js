@@ -55,8 +55,6 @@ const to_lower = subj => str(subj).toLowerCase()
 const sanitize = subj =>
   repl(subj, RegExp(`[${join(uniq(split(repl(subj, /[a-z-]/g, ''))))}]`, 'g'))
 
-//  repl(subj, join(uniq(split(repl(subj, /\w-/g, '')))), '')
-
 const to_dashed = subj => repl(subj, '_', '-')
 
 const transform_key = subj => flow(to_lower, to_dashed, sanitize)(subj)

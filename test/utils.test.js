@@ -22,7 +22,8 @@ import {
   keys_of,
   get,
   has_len,
-  repl
+  repl,
+  trim
 } from '../src/utils'
 
 test(noop.name, () => expect(noop()).toBe(undefined))
@@ -99,8 +100,8 @@ test(
     expect(str()).toBe('undefined'),
     expect(str('foo')).toBe('foo'),
     expect(str(1)).toBe('1'),
-    expect(str([])).toBe(''),
-    expect(str({})).toBe('[object Object]')
+    expect(str([])).toBe('[]'),
+    expect(str({})).toBe('{}')
   )
 )
 
@@ -194,3 +195,5 @@ test(
   () => expect(get({ foo: 1, bar: 2 }, 'foo')).toBe(1),
   expect(get([1, 2], 0)).toBe(1)
 )
+
+test(trim.name, () => expect(trim(' a ')).toBe('a'))

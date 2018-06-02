@@ -17,9 +17,12 @@ const is_obj = subj =>
 
 const iff = (cond, then = noop, other = noop) => (cond ? then() : other())
 
+const trim = subj => repl(str(subj), /[\s\n]/g)
+
 const add = (a, b) => a + b
 
-const str = subj => add(subj, '')
+const str = subj =>
+  ((is_str(subj) || !is_def(subj)) && add(subj, '')) || JSON.stringify(subj)
 
 const repl = (subj, char, with_char = '') => subj.replace(char, with_char)
 
@@ -91,5 +94,6 @@ export {
   reduc,
   keys_of,
   get,
-  repl
+  repl,
+  trim
 }

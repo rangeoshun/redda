@@ -1,27 +1,4 @@
 'use strict'
-
-import utils from './utils'
-
-const str_attrs = attrs =>
-  reduce(keys_of(attrs), '', (acc, key) =>
-    add(acc, ` ${transform_key(str(key))}="${str(get(attrs, key))}"`)
-  )
-
-const str_inner = html_arr => jsonml =>
-  reduce(jsonml, '', (inner, acc) =>
-    iff(
-      is_str(inner),
-      add_to(html_arr, inner),
-      iff(is_arr(inner), str_tag(inner))
-    )
-  )
-
-const start_tag = subj => add('<', transform_key(subj))
-
-const str_tag = html_arr => jsonml => undef // TODO: find a reducer for the createTag port
-
-const jsnml_to_html_string = jsonml => undef
-
 const div = sym('div')
 
 // App

@@ -1,51 +1,6 @@
 'use strict'
 
-// Utils
-
-const undef = undefined
-
-const noop = () => undef
-
-const is_def = subj => subj != undef
-
-const add = (a, b) => a + b
-
-const str = subj => add(subj, '')
-
-const sym = subj => Symbol.for(subj)
-
-const sym_to_str = sym => Symbol.keyFor(sym)
-
-const is_str = subj => typeof subj == 'string'
-
-const is_arr = subj => subj instanceof Array
-
-const is_obj = subj => subj instanceof Object
-
-const iff = (cond, then = noop, other = noop) => (cond ? then() : other())
-
-const has_length = arr => !!arr.length
-
-const reduce = ([first, ...rest] = [], acc = [], fn = noop, index_ = 0) =>
-  iff(
-    is_def(first) || has_length(rest),
-    () => reduce(rest, fn(acc, first, index_), fn),
-    () => acc
-  )
-
-const flow = (subj, ...fns) => reduce(fns, fn => fn(subj))
-
-const to_lower = subj => str(subj).toLowerCase()
-
-const sanitize = subj => escape(subj)
-
-const transform_key = subj => flow(subj, to_lower, sanitize)
-
-const add_to = (arr, subj) => arr.push(subj)
-
-const keys_of = subj => Object.keys(subj)
-
-const get = (subj = {}, key) => subj[key]
+import utils from './utils'
 
 const str_attrs = attrs =>
   reduce(keys_of(attrs), '', (acc, key) =>
@@ -67,12 +22,6 @@ const str_tag = html_arr => jsonml => undef // TODO: find a reducer for the crea
 
 const jsnml_to_html_string = jsonml => undef
 
-const elem = (type, attrs, ...cont) => (attrs = {}, cont = undef) => [
-  type,
-  attrs,
-  cont
-]
-
 const div = sym('div')
 
 // App
@@ -86,13 +35,19 @@ const header_style = {
   flex_shrink: 0
 }
 
-const header = (attrs = {}) => [
+const header = (attrs = {}, ...cont) => [
   div,
   { id: 'head', style: header_style, ...attrs },
-  'Title'
+  'Title',
+  ...cont
 ]
 
-const body = (attrs = {}) => [div, { id: 'body', ...attrs }, 'Nice app']
+const body = (attrs = {}, ...cont) => [
+  div,
+  { id: 'body', ...attrs },
+  'Nice app',
+  ...cont
+]
 
 const app = () => [div, { id: 'app', style: app_style }, header, body]
 

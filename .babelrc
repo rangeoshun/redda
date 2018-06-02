@@ -1,0 +1,14 @@
+{
+  "plugins": [
+    "transform-es2015-modules-commonjs",
+    "dynamic-import-node"
+  ],
+  "ignore": [
+    "node_modules/**/*"
+  ],
+  "env": {
+    "testing": {
+      "presets": ["es2015", { "modules": false }]
+    }
+  }
+}

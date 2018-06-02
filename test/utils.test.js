@@ -7,9 +7,11 @@ import {
   is_def,
   is_str,
   is_arr,
+  is_fn,
   is_obj,
   flow,
   is_in,
+  iff,
   uniq,
   to_lower,
   sanitize,
@@ -25,16 +27,62 @@ import {
 
 test(noop.name, () => expect(noop()).toBe(undefined))
 
-test('#is_def', () => (
-  expect(is_def(null)).toBe(true),
-  expect(is_def(0)).toBe(true),
-  expect(is_def(1)).toBe(true),
-  expect(is_def('')).toBe(true),
-  expect(is_def([])).toBe(true),
-  expect(is_def({})).toBe(true),
-  expect(is_def(undefined)).toBe(false),
-  expect(is_def()).toBe(false)
-))
+test(
+  is_def.name,
+  () => (
+    expect(is_def(undefined)).toBe(false),
+    expect(is_def()).toBe(false),
+    //
+    expect(is_def(null)).toBe(true),
+    expect(is_def(0)).toBe(true),
+    expect(is_def(1)).toBe(true),
+    expect(is_def('')).toBe(true),
+    expect(is_def([])).toBe(true),
+    expect(is_def({})).toBe(true),
+    expect(is_def(noop)).toBe(true)
+  )
+)
+
+test(
+  is_str.name,
+  () => (
+    expect(is_str(undefined)).toBe(false),
+    expect(is_str(1)).toBe(false),
+    expect(is_str(null)).toBe(false),
+    expect(is_str({})).toBe(false),
+    expect(is_str([])).toBe(false),
+    expect(is_str(noop)).toBe(false),
+    //
+    expect(is_str('foo')).toBe(true)
+  )
+)
+
+test(
+  is_fn.name,
+  () => (
+    expect(is_fn(undefined)).toBe(false),
+    expect(is_fn(1)).toBe(false),
+    expect(is_fn(null)).toBe(false),
+    expect(is_fn([])).toBe(false),
+    expect(is_fn('foo')).toBe(false),
+    expect(is_fn({})).toBe(false),
+    //
+    expect(is_fn(noop)).toBe(true)
+  )
+)
+
+test(
+  is_obj.name,
+  () => (
+    expect(is_obj(undefined)).toBe(false),
+    expect(is_obj(1)).toBe(false),
+    expect(is_obj(null)).toBe(false),
+    expect(is_obj([])).toBe(false),
+    expect(is_obj('foo')).toBe(false),
+    //
+    expect(is_obj({})).toBe(true)
+  )
+)
 
 test(
   add.name,
@@ -126,4 +174,23 @@ test(to_dashed.name, () => expect(to_dashed('foo_bar')).toBe('foo-bar'))
 
 test(transform_key.name, () =>
   expect(transform_key('<FOO_bar>')).toBe('foo-bar')
+)
+
+test(
+  iff.name,
+  () => expect(iff(true, () => true, () => false)).toBe(true),
+  expect(iff(false, () => true, () => false)).toBe(false),
+  expect(iff(false, () => true)).toBe(undefined)
+)
+
+test(add_to.name, () => expect(add_to([], 1)).toEqual([1]))
+
+test(keys_of.name, () =>
+  expect(keys_of({ foo: 1, bar: 2 })).toEqual(['foo', 'bar'])
+)
+
+test(
+  get.name,
+  () => expect(get({ foo: 1, bar: 2 }, 'foo')).toBe(1),
+  expect(get([1, 2], 0)).toBe(1)
 )

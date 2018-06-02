@@ -12,7 +12,8 @@ const is_fn = subj => typeof subj == 'function'
 
 const is_arr = subj => subj instanceof Array
 
-const is_obj = subj => subj instanceof Object
+const is_obj = subj =>
+  !is_str(subj) && !is_arr(subj) && !is_fn(subj) && subj instanceof Object
 
 const iff = (cond, then = noop, other = noop) => (cond ? then() : other())
 
@@ -59,7 +60,7 @@ const to_dashed = subj => repl(subj, '_', '-')
 
 const transform_key = subj => flow(to_lower, to_dashed, sanitize)(subj)
 
-const add_to = (arr, subj) => arr.push(subj)
+const add_to = (arr, subj) => [...arr, subj]
 
 const keys_of = subj => Object.keys(subj)
 
@@ -78,6 +79,7 @@ export {
   is_obj,
   has_len,
   is_in,
+  iff,
   join,
   uniq,
   flow,

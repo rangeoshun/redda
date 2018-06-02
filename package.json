@@ -3,7 +3,8 @@
     "jest": "^23.1.0"
   },
   "scripts": {
-    "test": "NODE_ENV=test jest --watch"
+    "test": "NODE_ENV=test jest --watch",
+    "coverage": "NODE_ENV=test jest --coverage"
   },
   "transform": {
     "^.+\\.js?$": "babel-jest"
@@ -14,5 +15,8 @@
     "babel-plugin-dynamic-import-node": "^1.2.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "regenerator-runtime": "^0.11.1"
+  },
+  "jest": {
+    "verbose": true
   }
 }

@@ -9,6 +9,8 @@ A functional approach to a JSONML based UI
 
 You'll need Node.js (at least v8.11 is recommended) and yarn for dependency management. 
 
+The plan is to have a docker environment for development, but you'll need dependencies installed locally for now.
+
 #### Dependencies
 
 After checking out the repo, execute following command in project root. This will install developement dependencies. One of the goals of this project is not to have any outter dependencies for final build.

@@ -85,6 +85,7 @@ test(
   () => (
     expect(to_jsonml()).toEqual([]),
     expect(to_jsonml([])).toEqual([]),
+    expect(to_jsonml([{}])).toEqual([]),
     expect(to_jsonml(['div'])).toEqual(['div']),
     expect(to_jsonml(['div', { id: 'foo' }])).toEqual(['div', { id: 'foo' }]),
     expect(to_jsonml(['div', { id: 'foo' }, ['div', { id: 'bar' }]])).toEqual([

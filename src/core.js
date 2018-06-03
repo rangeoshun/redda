@@ -8,6 +8,7 @@ const {
   is_obj,
   is_arr,
   is_str,
+  is_fn,
   str,
   get,
   join,
@@ -16,12 +17,28 @@ const {
   transform_key
 } = require('./utils')
 
+const str_style_attr = val => (!is_str(val) && val) || str(`'${val}'`)
+
+const str_style = attrs =>
+  (is_obj(attrs) &&
+    reduc(
+      keys_of(attrs),
+      '',
+      (acc, key) =>
+        `${acc} ${transform_key(str(key))}: ${str_style_attr(get(attrs, key))};`
+    )) ||
+  ''
+
 const str_attrs = attrs =>
   (is_obj(attrs) &&
     reduc(
       keys_of(attrs),
       '',
       (acc, key) =>
+        (key == 'style' &&
+          `${acc} ${transform_key(str(key))}="${str_style(
+            get(attrs, key)
+          )}"`) ||
         `${acc} ${transform_key(str(key))}="${str(get(attrs, key))}"`
     )) ||
   ''
@@ -49,4 +66,15 @@ const to_html = ([first, second, ...rest], html_arr = []) => [
     ]))
 ]
 
-module.exports = { str_attrs, str_inner, open_tag, close_tag, to_html }
+const to_jsonml = (first, second, ...cont) =>
+  is_fn(first) && first(...[second, ...cont])
+
+module.exports = {
+  str_style,
+  str_attrs,
+  str_inner,
+  open_tag,
+  close_tag,
+  to_html,
+  to_jsonml
+}

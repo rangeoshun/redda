@@ -1,11 +1,22 @@
 const {
+  str_style,
   str_attrs,
   str_inner,
   open_tag,
   close_tag,
-  to_html
+  to_html,
+  to_jsonml
 } = require('../src/core')
 
+test(
+  str_style.name,
+  () => (
+    expect(str_style({ foo: 1, bar: 'bar' })).toBe(" foo: 1; bar: 'bar';"),
+    expect(str_style({ FOO: 1, bar_baz: 'bar' })).toBe(
+      " foo: 1; bar-baz: 'bar';"
+    )
+  )
+)
 test(
   str_attrs.name,
   () => (
@@ -13,7 +24,9 @@ test(
     expect(str_attrs({ FOO: 'foo', bar_baz: 'bar' })).toBe(
       ' foo="foo" bar-baz="bar"'
     ),
-    expect(str_attrs({ foo: { bar: 'bar' } })).toBe(' foo="{"bar":"bar"}"')
+    expect(
+      str_attrs({ foo: { bar: 'bar' }, style: { FOO: 1, bar_baz: 'bar' } })
+    ).toBe(' foo="{"bar":"bar"}" style=" foo: 1; bar-baz: \'bar\';"')
   )
 )
 
@@ -50,15 +63,27 @@ test(
 
 test(
   to_html.name,
-  () =>
+  () => (
     expect(to_html(['div', { width: 300, data_foo: { bar: 'bar' } }])).toEqual([
       '<div width="300" data-foo="{"bar":"bar"}">',
       '</div>'
     ]),
-  expect(to_html(['div', ['div']])).toEqual([
-    '<div>',
-    '<div>',
-    '</div>',
-    '</div>'
-  ])
+    expect(to_html(['div', ['div']])).toEqual([
+      '<div>',
+      '<div>',
+      '</div>',
+      '</div>'
+    ])
+  )
+)
+
+test(
+  to_jsonml.name,
+  () => (
+    expect().toBe(),
+    expect(to_jsonml(attrs => ['foo', attrs], { foo: 1 })).toEqual([
+      'foo',
+      { foo: 1 }
+    ])
+  )
 )

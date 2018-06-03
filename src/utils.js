@@ -1,6 +1,6 @@
 'use strict'
 
-import { undef } from './const'
+const { undef } = require('./const')
 
 const noop = _ => undef
 
@@ -69,7 +69,7 @@ const keys_of = subj => Object.keys(subj)
 
 const get = (subj = {}, key) => subj[key]
 
-export {
+module.exports = {
   noop,
   add,
   str,

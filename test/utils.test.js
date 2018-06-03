@@ -1,4 +1,4 @@
-import {
+const {
   noop,
   add,
   str,
@@ -24,7 +24,7 @@ import {
   has_len,
   repl,
   trim
-} from '../src/utils'
+} = require('../src/utils')
 
 test(noop.name, () => expect(noop()).toBe(undefined))
 

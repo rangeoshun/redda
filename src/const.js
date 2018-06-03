@@ -2,6 +2,6 @@
 
 const undef = undefined
 
-export default {
+module.exports = {
   undef
 }

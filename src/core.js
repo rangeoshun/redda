@@ -1,6 +1,7 @@
 'use strict'
 
 const undef = require('./const')
+const { div } = require('./dom_syms.js')
 const {
   iff,
   add,
@@ -73,18 +74,16 @@ const to_html = ([first, second, ...rest] = [], html_arr = []) => [
     (is_sym(first) && wrap_tag(sym_to_str(first), second, ...rest)))
 ]
 
-const to_jsonml = ([first, second, ...rest] = []) =>
-  (!is_def(first) &&
-    is_def(second) &&
-    has_len(rest) &&
-    to_jsonml([second, ...rest])) ||
-  ((is_str(first) || is_sym(first)) && [
-    first,
-    ...to_jsonml([second, ...rest])
-  ]) ||
-  (is_arr(first) && [...to_jsonml(first), ...to_jsonml([second, ...rest])]) ||
-  (is_fn(first) && [...first([second, to_jsonml(rest)])]) ||
-  compress([first, second, ...rest])
+const to_jsonml = ([first, ...rest] = []) =>
+  compress(
+    ((is_str(first) || is_sym(first) || is_obj(first)) && [
+      first,
+      ...to_jsonml(rest)
+    ]) ||
+      (is_arr(first) && [to_jsonml(first), ...to_jsonml(rest)]) ||
+      (is_fn(first) && to_jsonml(first(rest))) ||
+      []
+  )
 
 module.exports = {
   str_style,

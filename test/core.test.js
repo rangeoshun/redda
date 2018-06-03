@@ -78,6 +78,8 @@ test(
   )
 )
 
+const fn = stuff => ['div', ...stuff]
+
 test(
   to_jsonml.name,
   () => (
@@ -85,19 +87,16 @@ test(
     expect(to_jsonml([])).toEqual([]),
     expect(to_jsonml(['div'])).toEqual(['div']),
     expect(to_jsonml(['div', { id: 'foo' }])).toEqual(['div', { id: 'foo' }]),
-    expect(
-      to_jsonml([
-        ([attrs, ...cont]) => ['div', attrs, ...cont],
-        { id: 'foo' },
-        ['div']
-      ])
-    ).toEqual(['div', { id: 'foo' }, ['div']]),
-    expect(
-      to_jsonml([
-        ([attrs, ...cont]) => ['div', attrs, ...cont],
-        { id: 'foo' },
-        () => ['div']
-      ])
-    ).toEqual(['div', { id: 'foo' }, ['div']])
+    expect(to_jsonml(['div', { id: 'foo' }, ['div', { id: 'bar' }]])).toEqual([
+      'div',
+      { id: 'foo' },
+      ['div', { id: 'bar' }]
+    ]),
+    expect(to_jsonml([fn, { id: 'foo' }, ['div']])).toEqual([
+      'div',
+      { id: 'foo' },
+      ['div']
+    ]),
+    expect(to_jsonml([fn, [fn], [fn]])).toEqual(['div', ['div'], ['div']])
   )
 )

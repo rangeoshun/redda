@@ -207,6 +207,30 @@ test(
   )
 )
 
-test(_.compress.name, () =>
-  expect(_.compress([null, undefined, '', {}, [], 0])).toEqual(['', {}, [], 0])
+test(
+  _.is_empty.name,
+  () => (
+    expect(_.is_empty(1)).toBe(false),
+    expect(_.is_empty(noop)).toBe(false),
+    expect(_.is_empty('foo')).toBe(false),
+    expect(_.is_empty(Symbol.for('foo'))).toBe(false),
+    expect(_.is_empty({ foo: 1 })).toBe(false),
+    expect(_.is_empty([1])).toBe(false),
+    //
+    expect(_.is_empty(undefined)).toBe(true),
+    expect(_.is_empty(null)).toBe(true),
+    expect(_.is_empty({})).toBe(true),
+    expect(_.is_empty([])).toBe(true)
+  )
+)
+
+test(
+  _.compress.name,
+  () => expect(_.compress([null, undefined, '', {}, [], 0])).toEqual(['', 0]),
+  expect(_.compress([null, undefined, '', { foo: 1 }, [1], 0])).toEqual([
+    '',
+    { foo: 1 },
+    [1],
+    0
+  ])
 )

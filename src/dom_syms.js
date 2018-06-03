@@ -141,7 +141,7 @@ const tags = [
   'xmp'
 ]
 
-module.exports = reduce(tags, {}, (acc, tag) => ({
+module.exports = reduc(tags, {}, (acc, tag) => ({
   ...acc,
   [Symbol.for(tag)]: tag
 }))

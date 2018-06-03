@@ -74,11 +74,19 @@ const keys_of = subj => Object.keys(subj)
 
 const get = (subj = {}, key) => subj[key]
 
+const is_empty = subj =>
+  is_null(subj) ||
+  !is_def(subj) ||
+  (is_arr(subj) && !has_len(subj)) ||
+  (is_obj(subj) && !has_len(keys_of(subj)))
+
 const compress = (subj = []) =>
   reduc(
     subj,
     [],
-    (acc, item) => (is_def(item) && !is_null(item) && [...acc, item]) || acc
+    (acc, item) =>
+      (is_def(item) && !is_null(item) && !is_empty(item) && [...acc, item]) ||
+      acc
   )
 
 module.exports = {
@@ -110,5 +118,6 @@ module.exports = {
   get,
   repl,
   trim,
-  compress
+  compress,
+  is_empty
 }

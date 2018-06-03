@@ -1,6 +1,41 @@
 # redda
 A functional approach to a JSONML based UI
 
+## Description
+
+The goal of the project is to create a UI framework that reads data and produces HTML. The basis is to use [JSONML](http://www.jsonml.org/) and augment it with the ability to use functions or symbols as `tag-name`.
+
+### Basic example
+
+```javascript
+const div = require('redda/dom_syms')
+const { to_jsonml, to_html } = require('redda/core')
+
+const app_style = {
+  display: 'flex'
+}
+
+const header_style = {
+  height: '50px',
+  flex_shrink: 0
+}
+
+const header = () => [div, { id: 'head', style: header_style }, 'Title']
+const body = () => [div, { id: 'body' }, 'Nice app']
+const app = () => [div, { id: 'app', style: app_style }, [header], [body]]
+
+console.log(to_html(to_jsonml([app]))
+```
+
+The example above should result in the following HTML string. Note: it was beautified to allow easier parsing for humans. Yes, there are obvious issues for now.
+
+```html
+<div id="app" style=" display: 'flex';">
+   <div id="head" style=" height: '50px'; flex-shrink: '0';">Title</div>
+   <div id="body">Nice app</div>
+</div>
+```
+
 ## Instructions
 
 ### Initial steps

@@ -2,9 +2,9 @@
 
 const undef = require('./const')
 const { div } = require('./dom_syms.js')
-const _ = require('./utils')
+ gsconst _ = require('./utils')
 
-const str_style_attr = val => (!_.is_str(val) && val) || _.str(`'${val}'`)
+const str_style_attr = val => (!_.is_str(val) && val) || _.str(`${val}`)
 
 const str_style = attrs =>
   (_.is_obj(attrs) &&

@@ -42,7 +42,11 @@ The example above should result in the following HTML string. Note: it was beaut
 
 #### Prerequisites
 
-You'll need Node.js (at least v8.11 is recommended) and yarn for dependency management. 
+You'll need Node.js (at least v8.11 is recommended) and yarn for dependency management, and rollup installed globally.
+
+```shell
+yarn global add rollup
+```
 
 The plan is to have a docker environment for development, but you'll need dependencies installed locally for now.
 

@@ -1,12 +1,11 @@
 'use strict'
 
-const undef = require('./const')
-const { div } = require('./dom_syms.js')
-const _ = require('./utils')
+import undef from './consts'
+import _ from './utils'
 
-const str_style_attr = val => (!_.is_str(val) && val) || _.str(`${val}`)
+export const str_style_attr = val => (!_.is_str(val) && val) || _.str(`${val}`)
 
-const str_style = attrs =>
+export const str_style = attrs =>
   (_.is_obj(attrs) &&
     _.trim(
       _.reduc(
@@ -20,7 +19,7 @@ const str_style = attrs =>
     )) ||
   ''
 
-const str_attrs = attrs =>
+export const str_attrs = attrs =>
   (_.is_obj(attrs) &&
     _.reduc(
       _.keys_of(attrs),
@@ -34,7 +33,7 @@ const str_attrs = attrs =>
     )) ||
   ''
 
-const str_inner = (jsonml, html_arr = []) =>
+export const str_inner = (jsonml, html_arr = []) =>
   _.reduc(
     jsonml,
     html_arr,
@@ -43,27 +42,27 @@ const str_inner = (jsonml, html_arr = []) =>
       (_.is_arr(inner) && build_html(inner, acc))
   )
 
-const open_tag = (type, attrs) =>
+export const open_tag = (type, attrs) =>
   `<${_.transform_key(type)}${str_attrs(attrs)}>`
 
-const close_tag = type => `</${_.transform_key(type)}>`
+export const close_tag = type => `</${_.transform_key(type)}>`
 
-const wrap_tag = (first, second, ...rest) => [
+export const wrap_tag = (first, second, ...rest) => [
   open_tag(first, _.is_obj(second) && second),
   ...str_inner([...((_.is_arr(second) && [second]) || []), ...rest]),
   close_tag(first)
 ]
 
-const build_html = ([first, second, ...rest] = [], html_arr = []) => [
+export const build_html = ([first, second, ...rest] = [], html_arr = []) => [
   ...html_arr,
   ...((_.is_arr(first) && str_inner(first)) ||
     (_.is_str(first) && wrap_tag(first, second, ...rest)) ||
     (_.is_sym(first) && wrap_tag(_.sym_to_str(first), second, ...rest)))
 ]
 
-const to_html = jsonml => _.join(build_html(jsonml))
+export const to_html = jsonml => _.join(build_html(jsonml))
 
-const to_jsonml = ([first, ...rest] = []) =>
+export const to_jsonml = ([first, ...rest] = []) =>
   _.compress(
     ((_.is_str(first) || _.is_sym(first) || _.is_obj(first)) && [
       first,
@@ -74,7 +73,7 @@ const to_jsonml = ([first, ...rest] = []) =>
       []
   )
 
-module.exports = {
+export default {
   str_style,
   str_attrs,
   str_inner,

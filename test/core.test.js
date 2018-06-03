@@ -1,5 +1,6 @@
-const { div } = require('../src/dom_syms')
-const {
+import syms from '../src/dom_syms'
+const { div } = syms
+import {
   str_style,
   str_attrs,
   str_inner,
@@ -7,7 +8,7 @@ const {
   close_tag,
   to_html,
   to_jsonml
-} = require('../src/core')
+} from '../src/core'
 
 test(
   str_style.name,

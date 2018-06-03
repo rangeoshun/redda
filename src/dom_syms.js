@@ -1,4 +1,5 @@
-const { reduc } = require('./utils')
+import _ from './utils'
+
 const tags = [
   'a',
   'abbr',
@@ -141,7 +142,9 @@ const tags = [
   'xmp'
 ]
 
-module.exports = reduc(tags, {}, (acc, tag) => ({
+const syms = _.reduc(tags, {}, (acc, tag) => ({
   ...acc,
   [tag]: Symbol.for(tag)
 }))
+
+export default { ...syms }

@@ -1,4 +1,4 @@
-const _ = require('../src/utils')
+import _ from '../src/utils'
 const { noop } = _
 
 test(_.noop.name, () => expect(_.noop()).toBe(undefined))

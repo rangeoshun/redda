@@ -1,3 +1,4 @@
+const { div } = require('../src/dom_syms')
 const {
   str_style,
   str_attrs,
@@ -61,24 +62,20 @@ test(
   )
 )
 
-test(
-  to_html.name,
-  () => (
-    expect(to_html(['div', { width: 300, data_foo: { bar: 'bar' } }])).toEqual([
-      '<div width="300" data-foo="{"bar":"bar"}">',
-      '</div>'
-    ]),
-    expect(to_html(['div', ['div']])).toEqual([
-      '<div>',
-      '<div>',
-      '</div>',
-      '</div>'
-    ]),
-    expect(to_html([Symbol.for('div')])).toEqual(['<div>', '</div>'])
-  )
-)
-
 const fn = stuff => ['div', ...stuff]
+
+const app_style = {
+  display: 'flex'
+}
+
+const header_style = {
+  height: '50px',
+  flex_shrink: 0
+}
+
+const header = () => [div, { id: 'head', style: header_style }, 'Title']
+const body = () => [div, { id: 'body' }, 'Nice app']
+const app = () => [div, { id: 'app', style: app_style }, [header], [body]]
 
 test(
   to_jsonml.name,
@@ -93,11 +90,32 @@ test(
       { id: 'foo' },
       ['div', { id: 'bar' }]
     ]),
+    expect(to_jsonml([fn])).toEqual(['div']),
     expect(to_jsonml([fn, { id: 'foo' }, ['div']])).toEqual([
       'div',
       { id: 'foo' },
       ['div']
     ]),
-    expect(to_jsonml([fn, [fn], [fn]])).toEqual(['div', ['div'], ['div']])
+    expect(to_jsonml([fn, [fn], [fn]])).toEqual(['div', ['div'], ['div']]),
+    expect(to_jsonml([app])).toEqual([
+      div,
+      { id: 'app', style: { display: 'flex' } },
+      [div, { id: 'head', style: { flex_shrink: 0, height: '50px' } }, 'Title'],
+      [div, { id: 'body' }, 'Nice app']
+    ])
+  )
+)
+
+test(
+  to_html.name,
+  () => (
+    expect(to_html(['div', { width: 300, data_foo: { bar: 'bar' } }])).toEqual(
+      '<div width="300" data-foo="{"bar":"bar"}"></div>'
+    ),
+    expect(to_html(['div', ['div']])).toEqual('<div><div></div></div>'),
+    expect(to_html([div])).toEqual('<div></div>'),
+    expect(to_html(to_jsonml([app]))).toEqual(
+      '<div id="app" style=" display: \'flex\';"><div id="head" style=" height: \'50px\'; flex-shrink: \'0\';">Title</div><div id="body">Nice app</div></div>'
+    )
   )
 )

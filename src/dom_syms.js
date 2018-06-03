@@ -143,5 +143,5 @@ const tags = [
 
 module.exports = reduc(tags, {}, (acc, tag) => ({
   ...acc,
-  [Symbol.for(tag)]: tag
+  [tag]: Symbol.for(tag)
 }))

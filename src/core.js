@@ -54,7 +54,7 @@ const str_inner = (jsonml, html_arr = []) =>
     html_arr,
     (acc, inner) =>
       (is_str(inner) && [...acc, inner]) ||
-      (is_arr(inner) && to_html(inner, acc))
+      (is_arr(inner) && build_html(inner, acc))
   )
 
 const open_tag = (type, attrs) => `<${transform_key(type)}${str_attrs(attrs)}>`
@@ -67,12 +67,14 @@ const wrap_tag = (first, second, ...rest) => [
   close_tag(first)
 ]
 
-const to_html = ([first, second, ...rest] = [], html_arr = []) => [
+const build_html = ([first, second, ...rest] = [], html_arr = []) => [
   ...html_arr,
   ...((is_arr(first) && str_inner(first)) ||
     (is_str(first) && wrap_tag(first, second, ...rest)) ||
     (is_sym(first) && wrap_tag(sym_to_str(first), second, ...rest)))
 ]
+
+const to_html = jsonml => join(build_html(jsonml))
 
 const to_jsonml = ([first, ...rest] = []) =>
   compress(

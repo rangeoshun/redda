@@ -5,7 +5,13 @@ A functional approach to a JSONML based UI
 
 ### Initial steps
 
-After checking out the repo, execute following command in project root.
+#### Prerequisites
+
+You'll need Node.js (at least v8.11 is recommended) and yarn for dependency management. 
+
+#### Dependencies
+
+After checking out the repo, execute following command in project root. This will install developement dependencies. One of the goals of this project is not to have any outter dependencies for final build.
 
 ```shell
 yarn

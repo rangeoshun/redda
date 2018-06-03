@@ -27,11 +27,11 @@ const app = () => [div, { id: 'app', style: app_style }, [header], [body]]
 console.log(to_html(to_jsonml([app]))
 ```
 
-The example above should result in the following HTML string. Note: it was beautified to allow easier parsing for humans. Yes, there are obvious issues for now.
+The example above should result in the following HTML string. Note: it was beautified to allow easier parsing for humans. Yes, there might be obvious issues for now.
 
 ```html
 <div id="app" style=" display: flex;">
-  <div id="head" style=" height: 50px; flex-shrink: 0;">Title</div>
+  <div id="head" style="height: 50px; flex-shrink: 0;">Title</div>
   <div id="body">Nice app</div>
 </div>
 ```

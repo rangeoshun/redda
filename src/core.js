@@ -8,13 +8,15 @@ const str_style_attr = val => (!_.is_str(val) && val) || _.str(`${val}`)
 
 const str_style = attrs =>
   (_.is_obj(attrs) &&
-    _.reduc(
-      _.keys_of(attrs),
-      '',
-      (acc, key) =>
-        `${acc} ${_.transform_key(_.str(key))}: ${str_style_attr(
-          _.get(attrs, key)
-        )};`
+    _.trim(
+      _.reduc(
+        _.keys_of(attrs),
+        '',
+        (acc, key) =>
+          `${acc} ${_.transform_key(_.str(key))}: ${str_style_attr(
+            _.get(attrs, key)
+          )};`
+      )
     )) ||
   ''
 

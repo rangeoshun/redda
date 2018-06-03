@@ -21,7 +21,7 @@ const is_sym = subj => typeof subj == 'symbol'
 
 const iff = (cond, then = noop, other = noop) => (cond ? then() : other())
 
-const trim = subj => repl(str(subj), /[\s\n]/g)
+const trim = (subj = '') => subj.trim && subj.trim()
 
 const add = (a, b) => a + b
 

@@ -73,17 +73,31 @@ test(
       '<div>',
       '</div>',
       '</div>'
-    ])
+    ]),
+    expect(to_html([Symbol.for('div')])).toEqual(['<div>', '</div>'])
   )
 )
 
 test(
   to_jsonml.name,
   () => (
-    expect().toBe(),
-    expect(to_jsonml(attrs => ['foo', attrs], { foo: 1 })).toEqual([
-      'foo',
-      { foo: 1 }
-    ])
+    expect(to_jsonml()).toEqual([]),
+    expect(to_jsonml([])).toEqual([]),
+    expect(to_jsonml(['div'])).toEqual(['div']),
+    expect(to_jsonml(['div', { id: 'foo' }])).toEqual(['div', { id: 'foo' }]),
+    expect(
+      to_jsonml([
+        ([attrs, ...cont]) => ['div', attrs, ...cont],
+        { id: 'foo' },
+        ['div']
+      ])
+    ).toEqual(['div', { id: 'foo' }, ['div']]),
+    expect(
+      to_jsonml([
+        ([attrs, ...cont]) => ['div', attrs, ...cont],
+        { id: 'foo' },
+        () => ['div']
+      ])
+    ).toEqual(['div', { id: 'foo' }, ['div']])
   )
 )

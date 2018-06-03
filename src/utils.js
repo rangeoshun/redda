@@ -2,7 +2,9 @@
 
 const { undef } = require('./const')
 
-const noop = _ => undef
+const noop = () => undef
+
+const is_null = subj => subj === null
 
 const is_def = subj => subj !== undef
 
@@ -15,6 +17,8 @@ const is_arr = subj => subj instanceof Array
 const is_obj = subj =>
   !is_str(subj) && !is_arr(subj) && !is_fn(subj) && subj instanceof Object
 
+const is_sym = subj => typeof subj == 'symbol'
+
 const iff = (cond, then = noop, other = noop) => (cond ? then() : other())
 
 const trim = subj => repl(str(subj), /[\s\n]/g)
@@ -26,7 +30,8 @@ const str = subj =>
 
 const repl = (subj, char, with_char = '') => subj.replace(char, with_char)
 
-const sym = subj => iff(is_fn(subj), _ => sym(subj.name), _ => Symbol.for(subj))
+const sym = subj =>
+  iff(is_fn(subj), () => sym(subj.name), () => Symbol.for(subj))
 
 const sym_to_str = sym => Symbol.keyFor(sym)
 
@@ -39,17 +44,17 @@ const join = (subj = [], joiner = '') => is_fn(subj.join) && subj.join(joiner)
 
 const uniq = subj =>
   reduc(subj, [], (acc, item) =>
-    iff(is_in(item, acc), _ => acc, _ => [...acc, item])
+    iff(is_in(item, acc), () => acc, () => [...acc, item])
   )
 
 const split = (subj = {}, by = '') =>
-  iff(is_def(by) && is_fn(subj.split), _ => subj.split(by))
+  iff(is_def(by) && is_fn(subj.split), () => subj.split(by))
 
 const reduc = ([first, ...rest] = [], acc = undef, fn = noop, index_ = 0) =>
   iff(
     is_def(first) || has_len(rest),
-    _ => reduc(rest, fn(acc, first, index_), fn),
-    _ => acc
+    () => reduc(rest, fn(acc, first, index_), fn),
+    () => acc
   )
 
 const flow = (...fns) => subj => reduc(fns, subj, (acc, fn) => fn(acc))
@@ -69,6 +74,13 @@ const keys_of = subj => Object.keys(subj)
 
 const get = (subj = {}, key) => subj[key]
 
+const compress = (subj = []) =>
+  reduc(
+    subj,
+    [],
+    (acc, item) => (is_def(item) && !is_null(item) && [...acc, item]) || acc
+  )
+
 module.exports = {
   noop,
   add,
@@ -80,6 +92,8 @@ module.exports = {
   is_fn,
   is_arr,
   is_obj,
+  is_sym,
+  is_null,
   has_len,
   is_in,
   iff,
@@ -95,5 +109,6 @@ module.exports = {
   keys_of,
   get,
   repl,
-  trim
+  trim,
+  compress
 }

@@ -84,3 +84,11 @@ If you need more fancy stuff, you after running the above command, open coverage
 ```shell
 open ./coverage/lcov-report/index.html
 ```
+
+### Building
+
+Use rollup to bundle package via:
+
+```shell
+yarn build
+```

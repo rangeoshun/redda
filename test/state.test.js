@@ -25,12 +25,10 @@ const foo_feat = () => ({ active: false })
 state_disp.add(foo_feat, toggle_active)
 state_disp.disp(toggle_active)
 
-test('state#disp', () => (
+test('state#disp', () =>
   expect(state_disp.get()).toMatchObject({
     [Symbol.for(foo_feat)]: { active: true }
-  }),
-  expect().toEqual()
-))
+  }))
 
 const state_conn = state()
 const frag_conn = () => ({ foo: 1 })

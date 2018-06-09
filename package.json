@@ -3,7 +3,8 @@
   "dependencies": {},
   "scripts": {
     "test": "NODE_ENV=test jest --watch",
-    "coverage": "NODE_ENV=test jest --coverage"
+    "coverage": "NODE_ENV=test jest --coverage",
+    "build": "rollup -c"
   },
   "transform": {
     "^.+\\.js?$": "babel-jest"

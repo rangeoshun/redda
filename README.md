@@ -36,6 +36,12 @@ The example above should result in the following HTML string. Note: it was beaut
 </div>
 ```
 
+## To come
+
+- [ ] State management
+- [ ] Event handling
+- [ ] Other goodies
+
 ## Instructions
 
 ### Initial steps

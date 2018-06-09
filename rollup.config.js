@@ -1,17 +1,17 @@
 import resolve from 'rollup-plugin-node-resolve'
 import babel from 'rollup-plugin-babel'
 import commonjs from 'rollup-plugin-commonjs'
+import closure from 'rollup-plugin-closure-compiler-js'
 
 export default {
   input: 'src/index.js',
   output: [
     {
-      file: 'build/index.cjs.js',
-      format: 'cjs'
-    },
-    {
-      file: 'build/index.es.js',
-      format: 'es'
+      file: 'build/index.js',
+      format: 'iife',
+      name: 'redda',
+      sourcemap: true,
+      extend: false
     }
   ],
   plugins: [
@@ -22,5 +22,6 @@ export default {
     }),
     resolve(),
     commonjs()
+    // closure()
   ]
 }

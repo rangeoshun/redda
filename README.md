@@ -40,6 +40,7 @@ The example above should result in the following HTML string. Note: it was beaut
 
 - [ ] State management
 - [ ] Event handling
+- [ ] Meaningful error messages
 - [ ] Other goodies
 
 ## Instructions

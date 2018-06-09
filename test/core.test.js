@@ -7,59 +7,46 @@ import {
   open_tag,
   close_tag,
   to_html,
-  to_jsonml
+  to_jsonml,
+  elem
 } from '../src/core'
 
-test(
-  str_style.name,
-  () => (
-    expect(str_style({ foo: 1, bar: 'bar' })).toBe('foo: 1; bar: bar;'),
-    expect(str_style({ FOO: 1, bar_baz: 'bar' })).toBe('foo: 1; bar-baz: bar;')
-  )
-)
-test(
-  str_attrs.name,
-  () => (
-    expect(str_attrs({ foo: 'foo', bar: 'bar' })).toBe(' foo="foo" bar="bar"'),
-    expect(str_attrs({ FOO: 'foo', bar_baz: 'bar' })).toBe(
-      ' foo="foo" bar-baz="bar"'
-    ),
-    expect(
-      str_attrs({ foo: { bar: 'bar' }, style: { FOO: 1, bar_baz: 'bar' } })
-    ).toBe(' foo="{"bar":"bar"}" style="foo: 1; bar-baz: bar;"')
-  )
-)
+test('#str_style', () => (
+  expect(str_style({ foo: 1, bar: 'bar' })).toBe('foo: 1; bar: bar;'),
+  expect(str_style({ FOO: 1, bar_baz: 'bar' })).toBe('foo: 1; bar-baz: bar;')
+))
 
-test(
-  open_tag.name,
-  () => (
-    expect(open_tag('div')).toBe('<div>'),
-    expect(open_tag('DIV')).toBe('<div>'),
-    expect(open_tag('FOO_bar>')).toBe('<foo-bar>'),
-    expect(open_tag('<!@>#@#%$%&?FOO>')).toBe('<foo>'),
-    expect(open_tag('p', { foo: 'foo' })).toBe('<p foo="foo">')
-  )
-)
+test('#str_attrs', () => (
+  expect(str_attrs({ foo: 'foo', bar: 'bar' })).toBe(' foo="foo" bar="bar"'),
+  expect(str_attrs({ FOO: 'foo', bar_baz: 'bar' })).toBe(
+    ' foo="foo" bar-baz="bar"'
+  ),
+  expect(
+    str_attrs({ foo: { bar: 'bar' }, style: { FOO: 1, bar_baz: 'bar' } })
+  ).toBe(' foo="{"bar":"bar"}" style="foo: 1; bar-baz: bar;"')
+))
 
-test(
-  close_tag.name,
-  () => (
-    expect(close_tag('div')).toBe('</div>'),
-    expect(close_tag('DIV?>??!@')).toBe('</div>')
-  )
-)
+test('#open_tag', () => (
+  expect(open_tag('div')).toBe('<div>'),
+  expect(open_tag('DIV')).toBe('<div>'),
+  expect(open_tag('FOO_bar>')).toBe('<foo-bar>'),
+  expect(open_tag('<!@>#@#%$%&?FOO>')).toBe('<foo>'),
+  expect(open_tag('p', { foo: 'foo' })).toBe('<p foo="foo">')
+))
 
-test(
-  str_inner.name,
-  () => (
-    expect(str_inner(['foo'], ['<br>'])).toEqual(['<br>', 'foo']),
-    expect(str_inner(['foo', ['div', { foo: 'foo' }]])).toEqual([
-      'foo',
-      '<div foo="foo">',
-      '</div>'
-    ])
-  )
-)
+test('#close_tag', () => (
+  expect(close_tag('div')).toBe('</div>'),
+  expect(close_tag('DIV?>??!@')).toBe('</div>')
+))
+
+test('#str_inner', () => (
+  expect(str_inner(['foo'], ['<br>'])).toEqual(['<br>', 'foo']),
+  expect(str_inner(['foo', ['div', { foo: 'foo' }]])).toEqual([
+    'foo',
+    '<div foo="foo">',
+    '</div>'
+  ])
+))
 
 const fn = stuff => ['div', ...stuff]
 
@@ -112,4 +99,17 @@ test('#to_html', () => (
     `<div id="app" style="display: flex;"><div id="head" style="height: 50px; flex-shrink: 0;">Title</div><div id="body">Nice app</div></div>`
   ) //,
   //expect(to_html(['div', { onclick: () => 'foo' }])).toEqual('<div></div>')
+))
+
+test('#elem', () => (
+  elem(
+    (attrs, ...cont) => (
+      expect(attrs).toEqual({ foo: 1 }), expect(cont).toEqual(['bar', 'baz'])
+    )
+  )({ foo: 1 }, 'bar', 'baz'),
+  elem(
+    (attrs, ...cont) => (
+      expect(attrs).toEqual({}), expect(cont).toEqual(['foo', 'bar'])
+    )
+  )('foo', 'bar')
 ))

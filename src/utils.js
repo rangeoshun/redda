@@ -3,6 +3,7 @@
 import { undef } from './consts'
 
 const noop = () => undef
+const pass = _ => _
 
 export const is_null = subj => subj === null
 
@@ -133,5 +134,6 @@ export default {
   trim,
   compress,
   is_empty,
-  rnd_id
+  rnd_id,
+  pass
 }

@@ -97,6 +97,11 @@ export const compress = (subj = []) =>
       acc
   )
 
+export const rnd_id = seed =>
+  ((new Date().getMilliseconds() + seed) * Math.PI + seed)
+    .toString(16)
+    .replace('.', '')
+
 export default {
   noop,
   add,
@@ -127,5 +132,6 @@ export default {
   repl,
   trim,
   compress,
-  is_empty
+  is_empty,
+  rnd_id
 }

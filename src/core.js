@@ -56,7 +56,7 @@ export const wrap_tag = (first, second, ...rest) => {
 }
 
 export const build_html = ([first, second, ...rest] = [], html = []) => {
-  if (_.is_arr(first)) return [...html, ...str_inner]
+  if (_.is_arr(first)) return [...html, ...str_inner([first, second, ...rest])]
 
   if (_.is_str(first)) return [...html, ...wrap_tag(first, second, ...rest)]
 

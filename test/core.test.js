@@ -94,6 +94,7 @@ test('#to_html', () => (
     '<div width="300" data-foo="{"bar":"bar"}"></div>'
   ),
   expect(to_html(['div', ['div']])).toEqual('<div><div></div></div>'),
+  expect(to_html([['div'], ['div']])).toEqual('<div></div><div></div>'),
   expect(to_html([div])).toEqual('<div></div>'),
   expect(to_html(to_jsonml([app]))).toEqual(
     `<div id="app" style="display: flex;"><div id="head" style="height: 50px; flex-shrink: 0;">Title</div><div id="body">Nice app</div></div>`

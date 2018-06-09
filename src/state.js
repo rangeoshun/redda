@@ -29,7 +29,7 @@ const add = (state = _init_state, init_frag, ...reducers) => {
   }
 }
 
-const connect = state => (elem = _.noop, ...frags) => (...args) =>
+const conn = (state, elem = _.noop, ...frags) => (...args) =>
   elem.apply(null, [
     _.reduc(frags, {}, (frag_state, { name }) => ({
       ...frag_state,
@@ -49,7 +49,7 @@ const disp = (state, reducr) => {
 
 const state = (state = _init_state) => ({
   add: (init_frag, ...reducers) => (state = add(state, init_frag, ...reducers)),
-  conn: connect(state),
+  conn: (elem, ...frags) => conn(state, elem, ...frags),
   disp: reducr => (state = disp(state, reducr)),
   get: sym => (sym && state && state[sym]) || state
 })

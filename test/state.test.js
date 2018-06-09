@@ -6,8 +6,6 @@ const state_get = state({ foo: 1 })
 
 test('state#get', () => expect(state_get.get()).toEqual({ foo: 1 }))
 
-// console.log(frag)
-
 const state_add = state()
 const frag_1 = () => ({ bar: 1 })
 const frag_2 = frag({ baz: 2 })
@@ -34,7 +32,10 @@ test('state#disp', () => (
   expect().toEqual()
 ))
 
-// const state_conn = state({ foo: 1 })
-// const mock_elem = (got_state, [attrs, ...cont]) => null
+const state_conn = state()
+const frag_conn = () => ({ foo: 1 })
+state_conn.add(frag_conn)
+const mock_elem = (state, attrs, ...cont) => JSON.stringify(state)
+const conn_elem = state_conn.conn(mock_elem, frag_conn)
 
-// // test('state#connect', () => expect())
+test('state#connect', () => expect(conn_elem()).toBe('{"frag_conn":{"foo":1}}'))

@@ -7,9 +7,7 @@ export const reducs_sym = _.sym(':reducs')
 const _init_state = { [reducs_sym]: {} }
 
 export const frag = (init_state, ...reducs) => {
-  const reducr_map = {}
-
-  _.reduc(reducs, {}, (acc, reducr) => ({
+  const reducr_map = _.reduc(reducs, {}, (acc, reducr) => ({
     ...acc,
     [_.sym(reducr)]: reducr
   }))
@@ -41,7 +39,7 @@ const conn = (state, elem = _.noop, ...frags) => (...args) =>
 const disp = (state, reducr) => {
   const reducs = state[reducs_sym]
 
-  return _.reduc(_.keys_of(reducs), state, (acc, frag_name) => ({
+  return _.reduc(_.syms_of(reducs), state, (acc, frag_name) => ({
     ...acc,
     [frag_name]: reducs[frag_name](state[frag_name], reducr)
   }))

@@ -31,13 +31,13 @@ test('state#disp', () =>
     [Symbol.for(foo_feat.name)]: { active: true }
   }))
 
-// const state_conn = state()
-// const frag_conn = () => ({ foo: 1 })
-// const inc_foo = ({ foo, ...state }) => ({ ...state, foo: foo + 1 })
-// state_conn.add(frag_conn, inc_foo)
-// const mock_elem = (state, attrs, ...cont) => JSON.stringify(state)
-// state_conn.disp(inc_foo)
-// const conn_elem = state_conn.conn(mock_elem, frag_conn)
-// // state_conn.disp(inc_foo)
+const state_conn = state()
+const frag_conn = () => ({ foo: 1 })
+const inc_foo = ({ foo, ...state }) => ({ ...state, foo: foo + 1 })
+state_conn.add(frag_conn, inc_foo)
+const mock_elem = (state, attrs, ...cont) => JSON.stringify(state)
+state_conn.disp(inc_foo)
+const conn_elem = state_conn.conn(mock_elem, frag_conn)
+state_conn.disp(inc_foo)
 
-// test('state#connect', () => expect(conn_elem()).toBe('{"frag_conn":{"foo":3}}'))
+test('state#connect', () => expect(conn_elem()).toBe('{"frag_conn":{"foo":3}}'))

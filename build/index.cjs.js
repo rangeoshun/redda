@@ -63,6 +63,8 @@ const add_to = (arr, subj) => [...arr, subj];
 
 const keys_of = subj => Object.keys(subj);
 
+const syms_of = subj => Object.getOwnPropertySymbols(subj);
+
 const get = (subj = {}, key) => subj[key];
 
 const is_empty = subj => is_null(subj) || !is_def(subj) || is_arr(subj) && !has_len(subj) || is_obj(subj) && !has_len(keys_of(subj));
@@ -97,6 +99,7 @@ var _ = {
   add_to,
   reduc,
   keys_of,
+  syms_of,
   get,
   repl,
   trim,
@@ -198,9 +201,7 @@ const reducs_sym = _.sym(':reducs');
 const _init_state = { [reducs_sym]: {} };
 
 const frag = (init_state, ...reducs) => {
-  const reducr_map = {};
-
-  _.reduc(reducs, {}, (acc, reducr) => _extends({}, acc, {
+  const reducr_map = _.reduc(reducs, {}, (acc, reducr) => _extends({}, acc, {
     [_.sym(reducr)]: reducr
   }));
 
@@ -218,23 +219,28 @@ const add$1 = (state = _init_state, init_frag, ...reducers) => {
 };
 
 const conn = (state, elem = _.noop, ...frags) => (...args) => elem.apply(null, [_.reduc(frags, {}, (frag_state, { name }) => _extends({}, frag_state, {
-  [name]: state[_.sym(name)]
+  [name]: state()[_.sym(name)]
 })), args]);
 
 const disp = (state, reducr) => {
   const reducs = state[reducs_sym];
 
-  return _.reduc(_.keys_of(reducs), {}, frag_name => _extends({}, state, {
+  return _.reduc(_.syms_of(reducs), state, (acc, frag_name) => _extends({}, acc, {
     [frag_name]: reducs[frag_name](state[frag_name], reducr)
   }));
 };
 
-const state = (state = _init_state) => ({
-  add: (init_frag, ...reducers) => state = add$1(state, init_frag, ...reducers),
-  conn: (elem, ...frags) => conn(state, elem, ...frags),
-  disp: reducr => state = disp(state, reducr),
-  get: sym$$1 => sym$$1 && state && state[sym$$1] || state
-});
+const state = (state_ = _init_state) => {
+  const get$$1 = () => state_;
+  const set$$1 = new_state => state_ = new_state;
+
+  return {
+    add: (init_frag, ...reducers) => set$$1(add$1(get$$1(), init_frag, ...reducers)),
+    conn: (elem, ...frags) => conn(get$$1, elem, ...frags),
+    disp: reducr => set$$1(disp(get$$1(), reducr)),
+    get: get$$1
+  };
+};
 
 var index = {
   consts,

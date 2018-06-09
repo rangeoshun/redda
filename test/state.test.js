@@ -1,4 +1,4 @@
-import state, { frag } from '../src/state'
+import state, { frag, reducs_sym } from '../src/state'
 
 test('#frag', () => expect(frag({ foo: 1 })()).toEqual({ foo: 1 }))
 
@@ -20,20 +20,24 @@ test('state#add', () =>
   }))
 
 const state_disp = state()
-const toggle_active = state => ({ ...state, active: !state['active'] })
+const toggle_active = state => ({ ...state, active: !state.active })
 const foo_feat = () => ({ active: false })
 state_disp.add(foo_feat, toggle_active)
 state_disp.disp(toggle_active)
 
 test('state#disp', () =>
-  expect(state_disp.get()).toMatchObject({
-    [Symbol.for(foo_feat)]: { active: true }
+  expect(state_disp.get()).toEqual({
+    ...state_disp.get(),
+    [Symbol.for(foo_feat.name)]: { active: true }
   }))
 
-const state_conn = state()
-const frag_conn = () => ({ foo: 1 })
-state_conn.add(frag_conn)
-const mock_elem = (state, attrs, ...cont) => JSON.stringify(state)
-const conn_elem = state_conn.conn(mock_elem, frag_conn)
+// const state_conn = state()
+// const frag_conn = () => ({ foo: 1 })
+// const inc_foo = ({ foo, ...state }) => ({ ...state, foo: foo + 1 })
+// state_conn.add(frag_conn, inc_foo)
+// const mock_elem = (state, attrs, ...cont) => JSON.stringify(state)
+// state_conn.disp(inc_foo)
+// const conn_elem = state_conn.conn(mock_elem, frag_conn)
+// // state_conn.disp(inc_foo)
 
-test('state#connect', () => expect(conn_elem()).toBe('{"frag_conn":{"foo":1}}'))
+// test('state#connect', () => expect(conn_elem()).toBe('{"frag_conn":{"foo":3}}'))

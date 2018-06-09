@@ -3,7 +3,7 @@
 import undef from './consts'
 import _ from './utils'
 
-const reducs_sym = _.sym(':reducs')
+export const reducs_sym = _.sym(':reducs')
 const _init_state = { [reducs_sym]: {} }
 
 export const frag = (init_state, ...reducs) => {
@@ -33,7 +33,7 @@ const conn = (state, elem = _.noop, ...frags) => (...args) =>
   elem.apply(null, [
     _.reduc(frags, {}, (frag_state, { name }) => ({
       ...frag_state,
-      [name]: state[_.sym(name)]
+      [name]: state()[_.sym(name)]
     })),
     args
   ])
@@ -41,17 +41,22 @@ const conn = (state, elem = _.noop, ...frags) => (...args) =>
 const disp = (state, reducr) => {
   const reducs = state[reducs_sym]
 
-  return _.reduc(_.keys_of(reducs), {}, frag_name => ({
-    ...state,
+  return _.reduc(_.keys_of(reducs), state, (acc, frag_name) => ({
+    ...acc,
     [frag_name]: reducs[frag_name](state[frag_name], reducr)
   }))
 }
 
-const state = (state = _init_state) => ({
-  add: (init_frag, ...reducers) => (state = add(state, init_frag, ...reducers)),
-  conn: (elem, ...frags) => conn(state, elem, ...frags),
-  disp: reducr => (state = disp(state, reducr)),
-  get: sym => (sym && state && state[sym]) || state
-})
+const state = (state_ = _init_state) => {
+  const get = () => state_
+  const set = new_state => (state_ = new_state)
+
+  return {
+    add: (init_frag, ...reducers) => set(add(get(), init_frag, ...reducers)),
+    conn: (elem, ...frags) => conn(get, elem, ...frags),
+    disp: reducr => set(disp(get(), reducr)),
+    get
+  }
+}
 
 export default state

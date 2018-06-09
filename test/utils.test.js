@@ -3,6 +3,8 @@ const { noop } = _
 
 test('#noop', () => expect(_.noop()).toBe(undefined))
 
+test('#pass', () => expect(_.pass(1)).toBe(1))
+
 test('#is_def', () => (
   expect(_.is_def(undefined)).toBe(false),
   expect(_.is_def()).toBe(false),

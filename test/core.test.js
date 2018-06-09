@@ -12,6 +12,7 @@ import {
 } from '../src/core'
 
 test('#str_style', () => (
+  expect(str_style()).toBe(''),
   expect(str_style({ foo: 1, bar: 'bar' })).toBe('foo: 1; bar: bar;'),
   expect(str_style({ FOO: 1, bar_baz: 'bar' })).toBe('foo: 1; bar-baz: bar;')
 ))

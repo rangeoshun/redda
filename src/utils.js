@@ -81,6 +81,8 @@ export const add_to = (arr, subj) => [...arr, subj]
 
 export const keys_of = subj => Object.keys(subj)
 
+export const syms_of = subj => Object.getOwnPropertySymbols(subj)
+
 export const get = (subj = {}, key) => subj[key]
 
 export const is_empty = subj =>
@@ -129,6 +131,7 @@ export default {
   add_to,
   reduc,
   keys_of,
+  syms_of,
   get,
   repl,
   trim,

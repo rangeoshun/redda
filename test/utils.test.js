@@ -124,7 +124,16 @@ test('#iff', () => (
 test('#add_to', () => expect(_.add_to([], 1)).toEqual([1]))
 
 test('#keys_of', () =>
-  expect(_.keys_of({ foo: 1, bar: 2 })).toEqual(['foo', 'bar']))
+  expect(_.keys_of({ foo: 1, bar: 2, [_.sym('baz')]: 3 })).toEqual([
+    'foo',
+    'bar'
+  ]))
+
+test('#syms_of', () =>
+  expect(_.syms_of({ [_.sym('foo')]: 1, [_.sym('bar')]: 2, baz: 3 })).toEqual([
+    _.sym('foo'),
+    _.sym('bar')
+  ]))
 
 test('#get', () => (
   expect(_.get({ foo: 1, bar: 2 }, 'foo')).toBe(1),

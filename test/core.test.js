@@ -76,45 +76,40 @@ const header = () => [div, { id: 'head', style: header_style }, 'Title']
 const body = () => [div, { id: 'body' }, 'Nice app']
 const app = () => [div, { id: 'app', style: app_style }, [header], [body]]
 
-test(
-  to_jsonml.name,
-  () => (
-    expect(to_jsonml()).toEqual([]),
-    expect(to_jsonml([])).toEqual([]),
-    expect(to_jsonml([{}])).toEqual([]),
-    expect(to_jsonml(['div'])).toEqual(['div']),
-    expect(to_jsonml(['div', { id: 'foo' }])).toEqual(['div', { id: 'foo' }]),
-    expect(to_jsonml(['div', { id: 'foo' }, ['div', { id: 'bar' }]])).toEqual([
-      'div',
-      { id: 'foo' },
-      ['div', { id: 'bar' }]
-    ]),
-    expect(to_jsonml([fn])).toEqual(['div']),
-    expect(to_jsonml([fn, { id: 'foo' }, ['div']])).toEqual([
-      'div',
-      { id: 'foo' },
-      ['div']
-    ]),
-    expect(to_jsonml([fn, [fn], [fn]])).toEqual(['div', ['div'], ['div']]),
-    expect(to_jsonml([app])).toEqual([
-      div,
-      { id: 'app', style: { display: 'flex' } },
-      [div, { id: 'head', style: { flex_shrink: 0, height: '50px' } }, 'Title'],
-      [div, { id: 'body' }, 'Nice app']
-    ])
-  )
-)
+test('#to_jsonml', () => (
+  expect(to_jsonml()).toEqual([]),
+  expect(to_jsonml([])).toEqual([]),
+  expect(to_jsonml([{}])).toEqual([]),
+  expect(to_jsonml(['div'])).toEqual(['div']),
+  expect(to_jsonml(['div', { id: 'foo' }])).toEqual(['div', { id: 'foo' }]),
+  expect(to_jsonml(['div', { id: 'foo' }, ['div', { id: 'bar' }]])).toEqual([
+    'div',
+    { id: 'foo' },
+    ['div', { id: 'bar' }]
+  ]),
+  expect(to_jsonml([fn])).toEqual(['div']),
+  expect(to_jsonml([fn, { id: 'foo' }, ['div']])).toEqual([
+    'div',
+    { id: 'foo' },
+    ['div']
+  ]),
+  expect(to_jsonml([fn, [fn], [fn]])).toEqual(['div', ['div'], ['div']]),
+  expect(to_jsonml([app])).toEqual([
+    div,
+    { id: 'app', style: { display: 'flex' } },
+    [div, { id: 'head', style: { flex_shrink: 0, height: '50px' } }, 'Title'],
+    [div, { id: 'body' }, 'Nice app']
+  ])
+))
 
-test(
-  to_html.name,
-  () => (
-    expect(to_html(['div', { width: 300, data_foo: { bar: 'bar' } }])).toEqual(
-      '<div width="300" data-foo="{"bar":"bar"}"></div>'
-    ),
-    expect(to_html(['div', ['div']])).toEqual('<div><div></div></div>'),
-    expect(to_html([div])).toEqual('<div></div>'),
-    expect(to_html(to_jsonml([app]))).toEqual(
-      `<div id="app" style="display: flex;"><div id="head" style="height: 50px; flex-shrink: 0;">Title</div><div id="body">Nice app</div></div>`
-    )
-  )
-)
+test('#to_html', () => (
+  expect(to_html(['div', { width: 300, data_foo: { bar: 'bar' } }])).toEqual(
+    '<div width="300" data-foo="{"bar":"bar"}"></div>'
+  ),
+  expect(to_html(['div', ['div']])).toEqual('<div><div></div></div>'),
+  expect(to_html([div])).toEqual('<div></div>'),
+  expect(to_html(to_jsonml([app]))).toEqual(
+    `<div id="app" style="display: flex;"><div id="head" style="height: 50px; flex-shrink: 0;">Title</div><div id="body">Nice app</div></div>`
+  ) //,
+  //expect(to_html(['div', { onclick: () => 'foo' }])).toEqual('<div></div>')
+))

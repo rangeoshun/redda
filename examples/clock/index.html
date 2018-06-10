@@ -25,14 +25,14 @@
 
       const app_with_time = state.conn(app, time)
 
-      const render_app = redda.core(
+      const render_app = redda.render(
         document.getElementById('app-cont'),
         [app_with_time]
       )
 
-     state.on_change(render_app)
+      state.on_change(render_app)
 
-     console.log(app_with_time())
+      console.log(app_with_time())
     </script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-# redda
+# Redda
 A functional approach to a JSONML based UI
 
 ## Description
@@ -90,7 +90,7 @@ const app = [fn_element, { id: 'your_elem' }, "Content provided outside"]
 <div id="your_elem" class="fancy">Content provided outside</div>
 ```
 
-As seen, the function used as a tag receives arguments. The first one is an `Object`, and the rest of the encolsing `Array` is considered to be the content, and is spreaded for our function. If the item following our function is not an object, an empty object will be passed instead to keep signature consistent.
+As seen the function used as a tag receives arguments. The first one is an `Object`, and the rest of the encolsing `Array` is considered to be the content, and is spreaded for our function. If the item following our function is not an object, an empty object will be passed instead to keep signature consistent.
 
 ```javascript
 const { div } = redda.dom
@@ -101,6 +101,41 @@ const app = [fn_element, "Content provided outside", "and some more"]
 ```
 ```html
 <div class="fancy">Content provided outside and some more</div>
+```
+### State
+
+All applications has a state. To solve this, Redda uses a Redux like state store with actions. There are some differences tho.
+
+#### The state store
+
+To create a state store just instantitate one.
+
+```javascript
+const state = redda.state()
+```
+
+This will handle state management through fragments registered and actions dispatched which will be familiar if you've used Redux before. The state in the previous example will return an object providing the state management methods you'll need. One of these is `get`, which will return current state. It's still empty tho.
+
+```javascript
+state.get() // => {}
+```
+
+#### Adding a fragment
+
+A fragment is very simple. It's a named function, returning the initial value for the fragment. The name will be used to register the fregment by. To make this clear please see the exampel below, keeping in mind we created a state in the previous.
+
+```javascript
+const fragment = () => ({ value: 0 })
+
+state.add(fragment)
+```
+
+We now officially have more then an empty state. Getting state will be as follows.
+
+```javascript
+{
+  "fragment": { value: 0 }
+}
 ```
 
 ## To come

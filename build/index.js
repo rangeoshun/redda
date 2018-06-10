@@ -179,13 +179,18 @@ var redda = (function () {
 
     if (_.is_arr(first)) return _.compress([to_jsonml(first), ...to_jsonml(rest)]);
 
-    if (_.is_fn(first)) return _.compress(to_jsonml(first(rest)));
+    if (_.is_fn(first)) return _.compress(to_jsonml(elem(first)(...rest)));
 
     return [];
   };
 
+  const elem = fn => (attrs, ...cont) => {
+    if (_.is_obj(attrs)) return fn(attrs, ...cont);
+
+    return fn({}, attrs, ...cont);
+  };
+
   var core = ((node, app) => {
-    console.log(to_html(to_jsonml(app)));
     const render = () => node.innerHTML = to_html(to_jsonml(app));
 
     render();

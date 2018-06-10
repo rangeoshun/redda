@@ -49,7 +49,7 @@ test('#str_inner', () => (
   ])
 ))
 
-const fn = stuff => ['div', ...stuff]
+const fn = (attrs, ...cont) => ['div', attrs, ...cont]
 
 const app_style = {
   display: 'flex'

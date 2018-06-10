@@ -20,16 +20,18 @@ test('state#add', () =>
   }))
 
 const state_disp = state()
-const toggle_active = state => ({ ...state, active: !state.active })
-const foo_feat = () => ({ active: false })
-state_disp.add(foo_feat, toggle_active)
-state_disp.disp(toggle_active)
+const set_active = (state, flag) => ({ ...state, active: flag })
+const foo_feat = () => ({ name: 'foo', active: false })
+state_disp.add(foo_feat, set_active)
+state_disp.disp(set_active, true)
 
 test('state#disp', () =>
   expect(state_disp.get()).toEqual({
     ...state_disp.get(),
-    [foo_feat.name]: { active: true }
+    [foo_feat.name]: { name: 'foo', active: true }
   }))
+
+const state_disp_args = state()
 
 const state_conn = state()
 const frag_conn = () => ({ foo: 1 })

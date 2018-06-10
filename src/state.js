@@ -13,8 +13,8 @@ export const frag = (init_state, ...reducs) => {
     [_.sym(reducr)]: reducr
   }))
 
-  return (state = init_state, reducr) =>
-    (!_.is_fn(reducr) && state) || reducr_map[_.sym(reducr)](state)
+  return (state = init_state, reducr, ...args) =>
+    (!_.is_fn(reducr) && state) || reducr_map[_.sym(reducr)](state, ...args)
 }
 
 const add = (state = _init_state, init_frag, ...reducers) => {
@@ -37,12 +37,12 @@ const conn = (state, elem = _.noop, ...frags) => (...args) =>
     args
   ])
 
-const disp = (state, reducr) => {
+const disp = (state, reducr, ...args) => {
   const reducs = state[reducs_sym]
 
   return _.reduc(_.syms_of(reducs), state, (acc, frag_name) => ({
     ...acc,
-    [frag_name]: reducs[frag_name](state[frag_name], reducr)
+    [frag_name]: reducs[frag_name](state[frag_name], reducr, ...args)
   }))
 }
 
@@ -67,8 +67,8 @@ const state = state_ => {
   return {
     add: (init_frag, ...reducers) => set(add(get(), init_frag, ...reducers)),
     conn: (elem, ...frags) => conn(get, elem, ...frags),
-    disp: reducr => (
-      set(disp(get(), reducr)), call_on_change(get()[on_change_sym])
+    disp: (reducr, ...args) => (
+      set(disp(get(), reducr, ...args)), call_on_change(get()[on_change_sym])
     ),
     on_change: fn =>
       set({ ...get(), [on_change_sym]: [...get()[on_change_sym], fn] }),

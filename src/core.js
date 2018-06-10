@@ -7,6 +7,7 @@ export const str_style_attr = val => (!_.is_str(val) && val) || _.str(`${val}`)
 
 export const str_style = attrs => {
   if (!_.is_obj(attrs)) return ''
+
   return _.trim(
     _.reduc(
       _.keys_of(attrs),
@@ -38,6 +39,7 @@ export const str_inner = (jsonml, html_arr = []) =>
   _.reduc(jsonml, html_arr, (acc, inner) => {
     if (_.is_str(inner)) return [...acc, inner]
     if (_.is_arr(inner)) return build_html(inner, acc)
+    return acc
   })
 
 export const open_tag = (type, attrs) =>
@@ -46,7 +48,7 @@ export const open_tag = (type, attrs) =>
 export const close_tag = type => `</${_.transform_key(type)}>`
 
 export const wrap_tag = (first, second, ...rest) => {
-  const inner = (_.is_arr(second) && [second]) || []
+  const inner = (!_.is_obj(second) && [second]) || []
 
   return [
     open_tag(first, _.is_obj(second) && second),
@@ -84,13 +86,11 @@ export const elem = fn => (attrs, ...cont) => {
   return fn({}, attrs, ...cont)
 }
 
-export default {
-  str_style,
-  str_attrs,
-  str_inner,
-  open_tag,
-  close_tag,
-  to_html,
-  to_jsonml,
-  elem
+export default (node, app) => {
+  console.log(to_html(to_jsonml(app)))
+  const render = () => (node.innerHTML = to_html(to_jsonml(app)))
+
+  render()
+
+  return render
 }

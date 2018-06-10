@@ -88,7 +88,6 @@ export const elem = fn => (attrs, ...cont) => {
 }
 
 export default (node, app) => {
-  console.log(to_html(to_jsonml(app)))
   const render = () => (node.innerHTML = to_html(to_jsonml(app)))
 
   render()

@@ -4,7 +4,8 @@ import undef from './consts'
 import _ from './utils'
 
 export const reducs_sym = _.sym(':reducs')
-const _init_state = { [reducs_sym]: {} }
+export const on_change_sym = _.sym(':on_change')
+const _init_state = { [reducs_sym]: {}, [on_change_sym]: [] }
 
 export const frag = (init_state, ...reducs) => {
   const reducr_map = _.reduc(reducs, {}, (acc, reducr) => ({
@@ -45,6 +46,8 @@ const disp = (state, reducr) => {
   }))
 }
 
+const call_on_change = cbs => _.reduc(cbs, null, (_, cb) => cb())
+
 const state = (state_ = _init_state) => {
   const get = () => state_
   const set = new_state => (state_ = new_state)
@@ -52,7 +55,11 @@ const state = (state_ = _init_state) => {
   return {
     add: (init_frag, ...reducers) => set(add(get(), init_frag, ...reducers)),
     conn: (elem, ...frags) => conn(get, elem, ...frags),
-    disp: reducr => set(disp(get(), reducr)),
+    disp: reducr => (
+      set(disp(get(), reducr)), call_on_change(get()[on_change_sym])
+    ),
+    on_change: fn =>
+      set({ ...get(), [on_change_sym]: [...get()[on_change_sym], fn] }),
     get
   }
 }

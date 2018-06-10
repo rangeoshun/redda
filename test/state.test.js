@@ -2,9 +2,9 @@ import state, { frag, reducs_sym } from '../src/state'
 
 test('#frag', () => expect(frag({ foo: 1 })()).toEqual({ foo: 1 }))
 
-const state_get = state({ foo: 1 })
+const state_get = state()
 
-test('state#get', () => expect(state_get.get()).toEqual({ foo: 1 }))
+test('state#get', () => expect(state_get.get()).toEqual({}))
 
 const state_add = state()
 const frag_1 = () => ({ bar: 1 })
@@ -15,8 +15,8 @@ state_add.add(frag_2)
 
 test('state#add', () =>
   expect(state_add.get()).toMatchObject({
-    [Symbol.for(frag_1.name)]: { bar: 1 },
-    [Symbol.for(frag_2.name)]: { baz: 2 }
+    [frag_1.name]: { bar: 1 },
+    [frag_2.name]: { baz: 2 }
   }))
 
 const state_disp = state()
@@ -28,7 +28,7 @@ state_disp.disp(toggle_active)
 test('state#disp', () =>
   expect(state_disp.get()).toEqual({
     ...state_disp.get(),
-    [Symbol.for(foo_feat.name)]: { active: true }
+    [foo_feat.name]: { active: true }
   }))
 
 const state_conn = state()

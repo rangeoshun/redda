@@ -180,6 +180,16 @@ Now, after `disp(set_value, 3)` our app will rerender and look like this:
 <h1>Value is 3</h1>
 ```
 
+## Examples
+
+To see an example please clone repo and browse the examples folder.
+
+```shell
+$ https://github.com/rangeoshun/redda.git
+$ cd redda
+$ open examples/clock/index.html
+```
+
 ## To come
 
 - [x] State management

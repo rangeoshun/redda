@@ -3,7 +3,7 @@ var redda = (function () {
 
   const undef = undefined;
 
-  var consts = {
+  var undef$1 = {
     undef
   };
 
@@ -190,7 +190,7 @@ var redda = (function () {
     return fn({}, attrs, ...cont);
   };
 
-  var core = ((node, app) => {
+  var render = ((node, app) => {
     const render = () => node.innerHTML = to_html(to_jsonml(app));
 
     render();
@@ -207,7 +207,7 @@ var redda = (function () {
       [_.sym(reducr)]: reducr
     }));
 
-    return (state = init_state, reducr) => !_.is_fn(reducr) && state || reducr_map[_.sym(reducr)](state);
+    return (state = init_state, reducr, ...args) => !_.is_fn(reducr) && state || reducr_map[_.sym(reducr)](state, ...args);
   };
 
   const add$1 = (state = _init_state, init_frag, ...reducers) => {
@@ -224,33 +224,44 @@ var redda = (function () {
     [name]: state()[_.sym(name)]
   })), args]);
 
-  const disp = (state, reducr) => {
+  const disp = (state, reducr, ...args) => {
     const reducs = state[reducs_sym];
 
     return _.reduc(_.syms_of(reducs), state, (acc, frag_name) => _extends({}, acc, {
-      [frag_name]: reducs[frag_name](state[frag_name], reducr)
+      [frag_name]: reducs[frag_name](state[frag_name], reducr, ...args)
     }));
   };
 
   const call_on_change = cbs => _.reduc(cbs, null, (_$$1, cb) => cb());
 
-  const state = (state_ = _init_state) => {
-    const get$$1 = () => state_;
-    const set$$1 = new_state => state_ = new_state;
+  const get_state = state => _.reduc(_.syms_of(state), {}, (acc, key) => {
+    if (key == reducs_sym || key == on_change_sym) return acc;
+
+    return _extends({}, acc, {
+      [_.sym_to_str(key)]: state[key]
+    });
+  });
+
+  const state = state_ => {
+    state_ = _extends({}, state_, _init_state);
+
+    const get$$1 = () => _extends({}, state_);
+    const set$$1 = new_state => (state_ = new_state, undef$1);
 
     return {
       add: (init_frag, ...reducers) => set$$1(add$1(get$$1(), init_frag, ...reducers)),
       conn: (elem, ...frags) => conn(get$$1, elem, ...frags),
-      disp: reducr => (set$$1(disp(get$$1(), reducr)), call_on_change(get$$1()[on_change_sym])),
+      disp: (reducr, ...args) => (set$$1(disp(get$$1(), reducr, ...args)), call_on_change(get$$1()[on_change_sym])),
       on_change: fn => set$$1(_extends({}, get$$1(), { [on_change_sym]: [...get$$1()[on_change_sym], fn] })),
-      get: get$$1
+
+      get: () => get_state(get$$1())
     };
   };
 
   var index = {
-    consts,
+    consts: undef$1,
     dom,
-    core,
+    render,
     utils: _,
     state
   };

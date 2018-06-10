@@ -1,0 +1,38 @@
+<!doctype html>
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  </head>
+  <body>
+    <div id="app-cont"></div>
+    <script src="../../build/index.js"></script>
+    <script>
+      const { div } = redda.dom
+      const state = redda.state()
+
+      const upd_time = () => new Date().toLocaleTimeString()
+      const time = () => upd_time()
+
+      state.add(time, upd_time)
+
+      setInterval(() => state.disp(upd_time), 1000)
+
+      const app = ({ time }) => [div, { id: 'clock' }, time]
+
+      const app_with_time = state.conn(app, time)
+
+      const render_app = redda.core(
+        document.getElementById('app-cont'),
+        [app_with_time]
+      )
+
+     state.on_change(render_app)
+
+     console.log(app_with_time())
+    </script>
+  </body>
+</html>

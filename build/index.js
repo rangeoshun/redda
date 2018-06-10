@@ -136,6 +136,7 @@ var redda = (function () {
 
   const str_style = attrs => {
     if (!_.is_obj(attrs)) return '';
+
     return _.trim(_.reduc(_.keys_of(attrs), '', (acc, key) => `${acc} ${_.transform_key(_.str(key))}: ${str_style_attr(_.get(attrs, key))};`));
   };
 
@@ -148,6 +149,7 @@ var redda = (function () {
   const str_inner = (jsonml, html_arr = []) => _.reduc(jsonml, html_arr, (acc, inner) => {
     if (_.is_str(inner)) return [...acc, inner];
     if (_.is_arr(inner)) return build_html(inner, acc);
+    return acc;
   });
 
   const open_tag = (type, attrs) => `<${_.transform_key(type)}${str_attrs(attrs)}>`;
@@ -155,7 +157,7 @@ var redda = (function () {
   const close_tag = type => `</${_.transform_key(type)}>`;
 
   const wrap_tag = (first, second, ...rest) => {
-    const inner = _.is_arr(second) && [second] || [];
+    const inner = !_.is_obj(second) && [second] || [];
 
     return [open_tag(first, _.is_obj(second) && second), ...str_inner([...inner, ...rest]), close_tag(first)];
   };
@@ -181,25 +183,19 @@ var redda = (function () {
 
     return [];
   };
-  const elem = fn => (attrs, ...cont) => {
-    if (_.is_obj(attrs)) return fn(attrs, ...cont);
 
-    return fn({}, attrs, ...cont);
-  };
+  var core = ((node, app) => {
+    console.log(to_html(to_jsonml(app)));
+    const render = () => node.innerHTML = to_html(to_jsonml(app));
 
-  var core = {
-    str_style,
-    str_attrs,
-    str_inner,
-    open_tag,
-    close_tag,
-    to_html,
-    to_jsonml,
-    elem
-  };
+    render();
+
+    return render;
+  });
 
   const reducs_sym = _.sym(':reducs');
-  const _init_state = { [reducs_sym]: {} };
+  const on_change_sym = _.sym(':on_change');
+  const _init_state = { [reducs_sym]: {}, [on_change_sym]: [] };
 
   const frag = (init_state, ...reducs) => {
     const reducr_map = _.reduc(reducs, {}, (acc, reducr) => _extends({}, acc, {
@@ -231,6 +227,8 @@ var redda = (function () {
     }));
   };
 
+  const call_on_change = cbs => _.reduc(cbs, null, (_$$1, cb) => cb());
+
   const state = (state_ = _init_state) => {
     const get$$1 = () => state_;
     const set$$1 = new_state => state_ = new_state;
@@ -238,7 +236,8 @@ var redda = (function () {
     return {
       add: (init_frag, ...reducers) => set$$1(add$1(get$$1(), init_frag, ...reducers)),
       conn: (elem, ...frags) => conn(get$$1, elem, ...frags),
-      disp: reducr => set$$1(disp(get$$1(), reducr)),
+      disp: reducr => (set$$1(disp(get$$1(), reducr)), call_on_change(get$$1()[on_change_sym])),
+      on_change: fn => set$$1(_extends({}, get$$1(), { [on_change_sym]: [...get$$1()[on_change_sym], fn] })),
       get: get$$1
     };
   };

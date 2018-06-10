@@ -5,38 +5,6 @@ A functional approach to a JSONML based UI
 
 The goal of the project is to create a UI framework that reads data and produces HTML. The basis is to use [JSONML](http://www.jsonml.org/) and augment it with the ability to use functions or symbols as `tag-name`.
 
-### Basic example
-
-```javascript
-const { div } = redda.dom
-
-const app_style = {
-  display: 'flex'
-}
-
-const header_style = {
-  height: '50px',
-  flex_shrink: 0
-}
-
-const header = () => [div, { id: 'head', style: header_style }, 'Title']
-const body = () => [div, { id: 'body' }, 'Nice app']
-const app = () => [div, { id: 'app', style: app_style }, [header], [body]]
-
-redda.core(document.getElementById('app-cont'), [app])
-```
-
-The example above should render the app as seen below. Note, `div#app-cont` should exist in the dom.
-
-```html
-<div id="app-cont">
-  <div id="app" style=" display: flex;">
-    <div id="head" style="height: 50px; flex-shrink: 0;">Title</div>
-    <div id="body">Nice app</div>
-  </div>
-</div>
-```
-
 ### Elements
 
 Elements are the basic building blocks that Redda uses to display content. All JSONML are valid elements. On top of that it can be a function returning a JSONML. One notable mention is that a Redda element can use a `Symbol` as tag name for example `Symbol.for('div')`. All native HTML5 elements are mapped to symbols accessable from `redda.dom` by destructuring.
@@ -102,6 +70,24 @@ const app = [fn_element, "Content provided outside", "and some more"]
 ```html
 <div class="fancy">Content provided outside and some more</div>
 ```
+
+### Rendering
+
+To render our app we use the method `render` provided by Redda. This needs an element to render your app into, and the app itself as follows. The former is a native DOM Node, the latter is a JSONML array.
+
+```javascript
+const { h1 } = redda.dom
+const render = redda.render(document.getElementById('app-cont'), [h1, 'Hello World!'])
+```
+
+Render will automatically render your app into the desired container node, and also return a function to trigger rerender. It will render like this.
+
+```html
+<div id="app-cont">
+  <h1>Hello World!</h1>
+</div>
+```
+
 ### State
 
 All applications has a state. To solve this, Redda uses a Redux like state store with actions. There are some differences tho.
@@ -122,20 +108,73 @@ state.get() // => {}
 
 #### Adding a fragment
 
-A fragment is very simple. It's a named function, returning the initial value for the fragment. The name will be used to register the fregment by. To make this clear please see the exampel below, keeping in mind we created a state in the previous.
+A fragment is very simple. It's a named function, returning the initial value for the fragment. The name will be used to register the fregment by. To make this clear please see the exampel below, keeping in mind we created a state in the previous. We'll use the method `add`.
 
 ```javascript
 const fragment = () => ({ value: 0 })
 
 state.add(fragment)
+
+state.get() // => { "fragment": { "value": 0 } }
+
 ```
 
-We now officially have more then an empty state. Getting state will be as follows.
+We now officially have more then an empty state.
+
+#### Actions and dispatching them
+
+Actions are also simple named functions. They differ from fragments in that they receive the current state to operate on and return a new state. Similar to how you would do with Redux. Let's follow the example we started with some adjustments.
 
 ```javascript
-{
-  "fragment": { value: 0 }
-}
+const set_value = ({ value, ...state }) => ({ ...state, value: value + 1 })
+```
+
+We need to register this along the fragment we created to make it use it. We can reuse this action with any other fragment we create. To dispatch it use the method provided by state as `disp`.
+
+```javascript
+state.add(fragment, set_value)
+
+state.disp(set_value, 1)
+
+state.get() // => { "fragment": { "value": 1 } }
+```
+
+#### Connecting elements with state
+
+This is where we make use of our state. We take a simple element as described above and connect it to our state. Still following the example we used. Please note that the signature of the element with state changes, as the first argument is the state, followed by the attributes and content.
+
+```javascript
+const { h1 } = redda.dom
+const element = ({ fragment: { value } }, attrs, ...cont) => [h1, { ...attrs }, `Value is ${value}`, ...cont]
+```
+
+To connect the element use the state provided method `conn`. First we need to specify the element we want to connect and then we provide the fragments we want to connect. We use the reference for these.
+
+```javascript
+const element_with_fragment = state.conn(element, fragment)
+state.disp(set_value, 2)
+```
+
+Now, whenever we call our new method returned by `conn`, it'll be provided with the current state. This is an object with keys by the name of the fragments, holding the actual values of those in the state store. Rendering our element we'll see it.
+
+```html
+<h1>Value is 2</h1>
+```
+
+#### Rerender app on state change
+
+To reflect state changes we need to use the state's `on_change` method and pass the `render` method provided by `redda.render(...)`.
+
+```javascript
+const render_app = redda.render(document.getElementById('app-cont'), [element_with_fragment])
+
+state.on_change(render_app)
+```
+
+Now, after `disp(set_value, 3)` our app will rerender and look like this:
+
+```html
+<h1>Value is 3</h1>
 ```
 
 ## To come

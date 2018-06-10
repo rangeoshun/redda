@@ -1,4 +1,4 @@
-# redda
+# Redda
 A functional approach to a JSONML based UI
 
 ## Description

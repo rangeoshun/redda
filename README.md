@@ -92,6 +92,8 @@ Render will automatically render your app into the desired container node, and a
 
 All applications has a state. To solve this, Redda uses a Redux like state store with actions. There are some differences tho.
 
+> **Caution!** Redda's state uses function names to identify state fragments and actions to dispatch. You'll need to `export` and `import` your fragments and actions once defined.
+
 #### The state store
 
 To create a state store just instantitate one.
@@ -145,7 +147,8 @@ This is where we make use of our state. We take a simple element as described ab
 
 ```javascript
 const { h1 } = redda.dom
-const element = ({ fragment: { value } }, attrs, ...cont) => [h1, { ...attrs }, `Value is ${value}`, ...cont]
+const element = ({ fragment: { value } }, attrs, ...cont) =>
+  [h1, { ...attrs }, `Value is ${value}`, ...cont]
 ```
 
 To connect the element use the state provided method `conn`. First we need to specify the element we want to connect and then we provide the fragments we want to connect. We use the reference for these.

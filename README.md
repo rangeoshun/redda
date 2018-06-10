@@ -46,16 +46,20 @@ Elements are the basic building blocks that Redda uses to display content. All J
 ```javascript
 const basic_element = ['div', { class: 'fancy' }, "Content text"]
 
-// This rendered would result in the following
-// >> <div class="fancy">Content text</div>
+// ...
+```
+```html
+<div class="fancy">Content text</div>
 ```
 
 ```javascript
 const { div } = redda.dom
 const sym_element = [div, { class: 'fancy' }, "Content text"]
 
-// This rendered would also result in the following
-// >> <div class="fancy">Content text</div>
+// ...
+```
+```html
+<div class="fancy">Content text</div>
 ```
 
 #### Function elements
@@ -67,8 +71,10 @@ const { div } = redda.dom
 const fn_element = () => [div, { class: 'fancy' }, "Content text"]
 const app = [fn_element]
 
-// Yet again this rendered would also result in the following
-// >> <div class="fancy">Content text</div>
+// ...
+```
+```html
+<div class="fancy">Content text</div>
 ```
 
 That does note display all the possibilities using functions. When we say you need to think about them as "tags", we mean it *can* be used as tags, in which case it will receive it's "context" as arguments. Please consider the following example.
@@ -78,8 +84,10 @@ const { div } = redda.dom
 const fn_element = (attrs, ...cont) => [div, { ...attrs, class: 'fancy' }, ...cont]
 const app = [fn_element, { id: 'your_elem' }, "Content provided outside"]
 
-// Yet again this rendered would also result in the following
-// >> <div id="your_elem" class="fancy">Content provided outside</div>
+// ...
+```
+```html
+<div id="your_elem" class="fancy">Content provided outside</div>
 ```
 
 As seen, the function used as a tag receives arguments. The first one is an `Object`, and the rest of the encolsing `Array` is considered to be the content, and is spreaded for our function. If the item following our function is not an object, an empty object will be passed instead to keep signature consistent.
@@ -89,8 +97,10 @@ const { div } = redda.dom
 const fn_element = (attrs, ...cont) => [div, { ...attrs, class: 'fancy' }, ...cont]
 const app = [fn_element, "Content provided outside", "and some more"]
 
-// Yet again this rendered would also result in the following
-// >> <div class="fancy">Content provided outside and some more</div>
+// ...
+```
+```html
+<div class="fancy">Content provided outside and some more</div>
 ```
 
 ## To come

@@ -8,8 +8,7 @@ The goal of the project is to create a UI framework that reads data and produces
 ### Basic example
 
 ```javascript
-const div = require('redda/dom_syms')
-const { to_jsonml, to_html } = require('redda/core')
+const { div } = redda.dom
 
 const app_style = {
   display: 'flex'
@@ -24,21 +23,42 @@ const header = () => [div, { id: 'head', style: header_style }, 'Title']
 const body = () => [div, { id: 'body' }, 'Nice app']
 const app = () => [div, { id: 'app', style: app_style }, [header], [body]]
 
-console.log(to_html(to_jsonml([app]))
+redda.core(document.getElementById('app-cont'), [app])
 ```
 
-The example above should result in the following HTML string. Note: it was beautified to allow easier parsing for humans. Yes, there might be obvious issues for now.
+The example above should render the app as seen below. Note, `div#app-cont` should exist in the dom.
 
 ```html
-<div id="app" style=" display: flex;">
-  <div id="head" style="height: 50px; flex-shrink: 0;">Title</div>
-  <div id="body">Nice app</div>
+<div id="app-cont">
+  <div id="app" style=" display: flex;">
+    <div id="head" style="height: 50px; flex-shrink: 0;">Title</div>
+    <div id="body">Nice app</div>
+  </div>
 </div>
 ```
 
+### Elements
+
+Elements are the basic building blocks that Redda uses to display content. All JSONML are valid elements. On top of that it can be a function returning a JSONML. One notable mention is that a Redda element can use a `Symbol` as tag name for example `Symbol.for('div')`. All native HTML5 elements are mapped to symbols accessable from `redda.dom` by destructuring.
+
+#### The basic jsonml
+
+```javascript
+const basic_element = ['div', { class: 'fancy' }, "Content text"]
+
+// This rendered would result in the following
+// >> <div class="fancy">Content text</div>
+```
+
+### State
+
+Redda uses a Redux like state management. It is designed to use a single state and you can connect your elements via a connector function provided by the state instance.
+
+#### Create a state
+
 ## To come
 
-- [ ] State management
+- [x] State management
 - [ ] Event handling
 - [ ] Meaningful error messages
 - [ ] Other goodies

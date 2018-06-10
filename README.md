@@ -174,7 +174,7 @@ const render_app = redda.render(document.getElementById('app-cont'), [element_wi
 state.on_change(render_app)
 ```
 
-Now, after `disp(set_value, 3)` our app will rerender and look like this:
+Now, after `state.disp(set_value, 3)` our app will rerender and look like this:
 
 ```html
 <h1>Value is 3</h1>

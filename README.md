@@ -128,7 +128,7 @@ We now officially have more then an empty state.
 Actions are also simple named functions. They differ from fragments in that they receive the current state to operate on and return a new state. Similar to how you would do with Redux. Let's follow the example we started with some adjustments.
 
 ```javascript
-const set_value = ({ value, ...state }) => ({ ...state, value: value + 1 })
+const set_value = ({ value, ...state }, new_value) => ({ ...state, value: new_value })
 ```
 
 We need to register this along the fragment we created to make it use it. We can reuse this action with any other fragment we create. To dispatch it use the method provided by state as `disp`.

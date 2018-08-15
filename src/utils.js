@@ -94,7 +94,7 @@ export const compress = (subj = []) =>
       acc
   )
 
-const rnd_id = () => {
+export const rnd_id = () => {
   const rnd = Math.random()
 
   return (rnd * rnd + rnd).toString(16).replace('.', '')

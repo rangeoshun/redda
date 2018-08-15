@@ -94,8 +94,8 @@ export const compress = (subj = []) =>
       acc
   )
 
-export const rnd_id = seed =>
-  ((new Date().getMilliseconds() + seed) * Math.PI + seed)
+export const rnd_id = () =>
+  ((new Date().getMilliseconds() + Date.now()) * Math.PI + Date.now())
     .toString(16)
     .replace('.', '')
 

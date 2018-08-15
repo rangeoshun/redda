@@ -45,8 +45,7 @@ export const join = (subj = [], joiner = '') =>
 export const uniq = subj =>
   reduc(subj, [], (acc, item) => (is_in(item, acc) ? acc : [...acc, item]))
 
-export const split = (subj = {}, by = '') =>
-  is_def(by) ? is_fn(subj.split) : subj.split(by)
+export const split = (subj = {}, by = '') => is_fn(subj.split) && subj.split(by)
 
 export const reduc = (
   [first, ...rest] = [],

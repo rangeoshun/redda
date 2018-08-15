@@ -20,9 +20,6 @@ export const is_obj = subj =>
 
 export const is_sym = subj => typeof subj == 'symbol'
 
-export const iff = (cond, then = noop, other = noop) =>
-  cond ? then() : other()
-
 export const trim = (subj = '') => subj.trim && subj.trim()
 
 export const add = (a, b) => a + b
@@ -33,8 +30,7 @@ export const str = subj =>
 export const repl = (subj, char, with_char = '') =>
   subj.replace(char, with_char)
 
-export const sym = subj =>
-  iff(is_fn(subj), () => sym(subj.name), () => Symbol.for(subj))
+export const sym = subj => (is_fn(subj) ? sym(subj.name) : Symbol.for(subj))
 
 export const sym_to_str = sym => Symbol.keyFor(sym)
 
@@ -47,12 +43,10 @@ export const join = (subj = [], joiner = '') =>
   is_fn(subj.join) && subj.join(joiner)
 
 export const uniq = subj =>
-  reduc(subj, [], (acc, item) =>
-    iff(is_in(item, acc), () => acc, () => [...acc, item])
-  )
+  reduc(subj, [], (acc, item) => (is_in(item, acc) ? acc : [...acc, item]))
 
 export const split = (subj = {}, by = '') =>
-  iff(is_def(by) && is_fn(subj.split), () => subj.split(by))
+  is_def(by) ? is_fn(subj.split) : subj.split(by)
 
 export const reduc = (
   [first, ...rest] = [],
@@ -60,11 +54,7 @@ export const reduc = (
   fn = noop,
   index_ = 0
 ) =>
-  iff(
-    is_def(first) || has_len(rest),
-    () => reduc(rest, fn(acc, first, index_), fn),
-    () => acc
-  )
+  is_def(first) || has_len(rest) ? reduc(rest, fn(acc, first, index_), fn) : acc
 
 export const flow = (...fns) => subj => reduc(fns, subj, (acc, fn) => fn(acc))
 
@@ -125,7 +115,6 @@ export default {
   is_null,
   has_len,
   is_in,
-  iff,
   join,
   uniq,
   flow,

@@ -24,8 +24,6 @@ var redda = (function () {
 
   const is_sym = subj => typeof subj == 'symbol';
 
-  const iff = (cond, then = noop, other = noop) => cond ? then() : other();
-
   const trim = (subj = '') => subj.trim && subj.trim();
 
   const add = (a, b) => a + b;
@@ -34,7 +32,7 @@ var redda = (function () {
 
   const repl = (subj, char, with_char = '') => subj.replace(char, with_char);
 
-  const sym = subj => iff(is_fn(subj), () => sym(subj.name), () => Symbol.for(subj));
+  const sym = subj => is_fn(subj) ? sym(subj.name) : Symbol.for(subj);
 
   const sym_to_str = sym => Symbol.keyFor(sym);
 
@@ -44,11 +42,11 @@ var redda = (function () {
 
   const join = (subj = [], joiner = '') => is_fn(subj.join) && subj.join(joiner);
 
-  const uniq = subj => reduc(subj, [], (acc, item) => iff(is_in(item, acc), () => acc, () => [...acc, item]));
+  const uniq = subj => reduc(subj, [], (acc, item) => is_in(item, acc) ? acc : [...acc, item]);
 
-  const split = (subj = {}, by = '') => iff(is_def(by) && is_fn(subj.split), () => subj.split(by));
+  const split = (subj = {}, by = '') => is_fn(subj.split) && subj.split(by);
 
-  const reduc = ([first, ...rest] = [], acc = undef, fn = noop, index_ = 0) => iff(is_def(first) || has_len(rest), () => reduc(rest, fn(acc, first, index_), fn), () => acc);
+  const reduc = ([first, ...rest] = [], acc = undef, fn = noop, index_ = 0) => is_def(first) || has_len(rest) ? reduc(rest, fn(acc, first, index_), fn) : acc;
 
   const flow = (...fns) => subj => reduc(fns, subj, (acc, fn) => fn(acc));
 
@@ -89,7 +87,6 @@ var redda = (function () {
     is_null,
     has_len,
     is_in,
-    iff,
     join,
     uniq,
     flow,

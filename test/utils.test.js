@@ -102,8 +102,18 @@ test('#reduc', () => (
 ))
 
 test('#flow', () => (
-  expect(_.flow(val => val + 1, val => val + 1)(0)).toBe(2),
-  expect(_.flow(val => true, val => false)(0)).toBe(false),
+  expect(
+    _.flow(
+      val => val + 1,
+      val => val + 1
+    )(0)
+  ).toBe(2),
+  expect(
+    _.flow(
+      val => true,
+      val => false
+    )(0)
+  ).toBe(false),
   expect(_.flow()()).toBe()
 ))
 
@@ -116,12 +126,6 @@ test('#to_dashed', () => expect(_.to_dashed('foo_bar')).toBe('foo-bar'))
 
 test('#transform_key', () =>
   expect(_.transform_key('<FOO_bar>')).toBe('foo-bar'))
-
-test('#iff', () => (
-  expect(_.iff(true, () => true, () => false)).toBe(true),
-  expect(_.iff(false, () => true, () => false)).toBe(false),
-  expect(_.iff(false, () => true)).toBe(undefined)
-))
 
 test('#add_to', () => expect(_.add_to([], 1)).toEqual([1]))
 

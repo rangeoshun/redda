@@ -14,25 +14,27 @@ export const str_style = attrs => {
       '',
       (acc, key) =>
         `${acc} ${_.transform_key(_.str(key))}: ${str_style_attr(
-          _.get(attrs, key)
-        )};`
-    )
+          _.get(attrs, key),
+        )};`,
+    ),
   )
 }
+
+const is_style = key => key === 'style'
 
 export const str_attrs = attrs => {
   if (!_.is_obj(attrs)) return ''
 
-  return _.reduc(
-    _.keys_of(attrs),
-    '',
-    (acc, key) =>
-      (key == 'style' &&
-        `${acc} ${_.transform_key(_.str(key))}="${str_style(
-          _.get(attrs, key)
-        )}"`) ||
-      `${acc} ${_.transform_key(_.str(key))}="${_.str(_.get(attrs, key))}"`
-  )
+  return _.reduc(_.keys_of(attrs), '', (acc, key) => {
+    if (is_style(key))
+      return `${acc} ${_.transform_key(_.str(key))}="${str_style(
+        _.get(attrs, key),
+      )}"`
+    else
+      return `${acc} ${_.transform_key(_.str(key))}="${_.str(
+        _.get(attrs, key),
+      )}"`
+  })
 }
 
 export const str_inner = (jsonml, html_arr = []) =>
@@ -53,7 +55,7 @@ export const wrap_tag = (first, second, ...rest) => {
   return [
     open_tag(first, _.is_obj(second) && second),
     ...str_inner([...inner, ...rest]),
-    close_tag(first)
+    close_tag(first),
   ]
 }
 

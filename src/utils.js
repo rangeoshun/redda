@@ -1,6 +1,6 @@
-'use strict'
+"use strict"
 
-import { undef } from './consts'
+import { undef } from "./consts"
 
 const noop = () => undef
 const pass = _ => _
@@ -9,28 +9,28 @@ export const is_null = subj => subj === null
 
 export const is_def = subj => subj !== undef
 
-export const is_str = subj => typeof subj == 'string'
+export const is_str = subj => typeof subj == "string"
 
-export const is_fn = subj => typeof subj == 'function'
+export const is_fn = subj => typeof subj == "function"
 
 export const is_arr = subj => subj instanceof Array
 
 export const is_obj = subj =>
   !is_str(subj) && !is_arr(subj) && !is_fn(subj) && subj instanceof Object
 
-export const is_sym = subj => typeof subj == 'symbol'
+export const is_sym = subj => typeof subj == "symbol"
 
 export const iff = (cond, then = noop, other = noop) =>
   cond ? then() : other()
 
-export const trim = (subj = '') => subj.trim && subj.trim()
+export const trim = (subj = "") => subj.trim && subj.trim()
 
 export const add = (a, b) => a + b
 
 export const str = subj =>
-  ((is_str(subj) || !is_def(subj)) && add(subj, '')) || JSON.stringify(subj)
+  ((is_str(subj) || !is_def(subj)) && add(subj, "")) || JSON.stringify(subj)
 
-export const repl = (subj, char, with_char = '') =>
+export const repl = (subj, char, with_char = "") =>
   subj.replace(char, with_char)
 
 export const sym = subj =>
@@ -43,7 +43,7 @@ export const has_len = arr => !!arr.length
 export const is_in = (subj, arr = []) =>
   reduc(arr, false, (acc, item) => acc || item == subj)
 
-export const join = (subj = [], joiner = '') =>
+export const join = (subj = [], joiner = "") =>
   is_fn(subj.join) && subj.join(joiner)
 
 export const uniq = subj =>
@@ -51,7 +51,7 @@ export const uniq = subj =>
     iff(is_in(item, acc), () => acc, () => [...acc, item])
   )
 
-export const split = (subj = {}, by = '') =>
+export const split = (subj = {}, by = "") =>
   iff(is_def(by) && is_fn(subj.split), () => subj.split(by))
 
 export const reduc = (
@@ -71,11 +71,16 @@ export const flow = (...fns) => subj => reduc(fns, subj, (acc, fn) => fn(acc))
 export const to_lower = subj => str(subj).toLowerCase()
 
 export const sanitize = subj =>
-  repl(subj, RegExp(`[${join(uniq(split(repl(subj, /[a-z-]/g, ''))))}]`, 'g'))
+  repl(subj, RegExp(`[${join(uniq(split(repl(subj, /[a-z-]/g, ""))))}]`, "g"))
 
-export const to_dashed = subj => repl(subj, '_', '-')
+export const to_dashed = subj => repl(subj, "_", "-")
 
-export const transform_key = subj => flow(to_lower, to_dashed, sanitize)(subj)
+export const transform_key = subj =>
+  flow(
+    to_lower,
+    to_dashed,
+    sanitize
+  )(subj)
 
 export const add_to = (arr, subj) => [...arr, subj]
 
@@ -103,7 +108,7 @@ export const compress = (subj = []) =>
 export const rnd_id = seed =>
   ((new Date().getMilliseconds() + seed) * Math.PI + seed)
     .toString(16)
-    .replace('.', '')
+    .replace(".", "")
 
 export default {
   noop,

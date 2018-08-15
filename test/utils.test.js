@@ -198,11 +198,10 @@ test(
 )
 
 test('#rnd_id', () => {
-  const ids = _.uniq(
-    Array(1000)
-      .fill(undefined)
-      .map((_, i) => i)
-      .map(_.rnd_id)
-  )
-  expect(ids.length).toBe(ids.length)
+  const ids = Array(1000)
+    .fill(undefined)
+    .map((_, i) => i)
+    .map(_.rnd_id)
+
+  expect(_.uniq(ids).length).toBe(ids.length)
 })

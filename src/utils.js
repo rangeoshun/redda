@@ -94,10 +94,11 @@ export const compress = (subj = []) =>
       acc
   )
 
-export const rnd_id = () =>
-  ((new Date().getMilliseconds() + Date.now()) * Math.PI + Date.now())
-    .toString(16)
-    .replace('.', '')
+const rnd_id = () => {
+  const rnd = Math.random()
+
+  return (rnd * rnd + rnd).toString(16).replace('.', '')
+}
 
 export default {
   noop,

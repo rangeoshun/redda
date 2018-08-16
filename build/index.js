@@ -289,9 +289,9 @@ var redda = (function () {
     store_ = {};
 
     return {
-      reset: () => reduc(keys_of(state_), (_$$1, key) => delete store_[key]),
+      reset: () => reduc(keys_of(store_), (_$$1, key) => delete store_[key]),
       reg: handlr => {
-        const [handlr_id, new_store] = reg(store, handlr);
+        const [handlr_id, new_store] = reg(store_, handlr);
         store_ = new_store;
 
         return handlr_id;
@@ -299,7 +299,8 @@ var redda = (function () {
     };
   };
 
-  const render = renderer(handlrs);
+  console.log(handlrs);
+  const render = renderer(handlrs());
 
   var index = {
     consts: undef$1,

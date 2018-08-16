@@ -7,12 +7,12 @@ import utils from './utils'
 import state from './state'
 import handlrs from './handlrs'
 
-const render = renderer(handlrs)
+const render = renderer(handlrs())
 
 export default {
   consts,
   dom,
   render,
   utils,
-  state,
+  state
 }

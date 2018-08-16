@@ -1,6 +1,6 @@
 'use strict'
 
-import { rnd_id } from './utils'
+import { rnd_id, keys_of, reduc } from './utils'
 
 const reg = (store, handlr) => {
   handlr_id = rnd_id()
@@ -16,7 +16,7 @@ const handlrs = store_ => {
   store_ = {}
 
   return {
-    reset: () => (store_ = {}),
+    reset: () => reduc(keys_of(state_), (_, key) => delete store_[key]),
     reg: handlr => {
       const [handlr_id, new_store] = reg(store, handlr)
       store_ = new_store

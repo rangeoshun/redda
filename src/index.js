@@ -5,14 +5,16 @@ import dom from './dom_syms'
 import renderer from './core'
 import utils from './utils'
 import state from './state'
-import handlrs from './handlrs'
+import handlrs_ from './handlrs'
 
-const render = renderer(handlrs())
+const handlrs = handlrs_()
+const render = renderer(handlrs)
 
 export default {
   consts,
   dom,
   render,
+  handlrs,
   utils,
   state
 }

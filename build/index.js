@@ -156,7 +156,7 @@ var redda = (function () {
 
       if (is_handl(trans_key)) {
         const handlr_id = handlrs.reg(val);
-        return conc + `"redda.handlrs['${handlr_id}'](event)"`;
+        return conc + `"redda.handlrs.get()['${handlr_id}'](event)"`;
       }
 
       return conc + `"${_.str(val)}"`;
@@ -177,7 +177,7 @@ var redda = (function () {
   const wrap_tag = (handlrs, first, second, ...rest) => {
     const inner = !_.is_obj(second) && [second] || [];
 
-    return [open_tag(first, _.is_obj(second) && second, handlrs), ...str_inner([...inner, ...rest]), close_tag(first)];
+    return [open_tag(first, _.is_obj(second) && second, handlrs), ...str_inner([...inner, ...rest], [], handlrs), close_tag(first)];
   };
 
   const build_html = ([first, second, ...rest] = [], html = [], handlrs) => {
@@ -208,6 +208,7 @@ var redda = (function () {
   };
 
   var renderer = (handlrs => (node, app) => {
+    console.log(handlrs);
     const render = () => node.innerHTML = to_html(to_jsonml(app), handlrs);
 
     handlrs.reset();
@@ -277,7 +278,7 @@ var redda = (function () {
   };
 
   const reg = (store, handlr) => {
-    handlr_id = rnd_id();
+    const handlr_id = rnd_id();
 
     const new_store = _extends({}, store, {
       [handlr_id]: handlr
@@ -289,6 +290,7 @@ var redda = (function () {
     store_ = {};
 
     return {
+      get: () => store_,
       reset: () => reduc(keys_of(store_), (_$$1, key) => delete store_[key]),
       reg: handlr => {
         const [handlr_id, new_store] = reg(store_, handlr);
@@ -299,13 +301,14 @@ var redda = (function () {
     };
   };
 
-  console.log(handlrs);
-  const render = renderer(handlrs());
+  const handlrs$1 = handlrs();
+  const render = renderer(handlrs$1);
 
   var index = {
     consts: undef$1,
     dom,
     render,
+    handlrs: handlrs$1,
     utils: _,
     state
   };

@@ -35,7 +35,7 @@ export const str_attrs = (attrs, handlrs) => {
 
     if (is_handl(trans_key)) {
       const handlr_id = handlrs.reg(val)
-      return conc + `"redda.handlrs['${handlr_id}'](event)"`
+      return conc + `"redda.handlrs.get()['${handlr_id}'](event)"`
     }
 
     return conc + `"${_.str(val)}"`
@@ -60,7 +60,7 @@ export const wrap_tag = (handlrs, first, second, ...rest) => {
 
   return [
     open_tag(first, _.is_obj(second) && second, handlrs),
-    ...str_inner([...inner, ...rest]),
+    ...str_inner([...inner, ...rest], [], handlrs),
     close_tag(first)
   ]
 }
@@ -102,6 +102,7 @@ export const elem = fn => (attrs, ...cont) => {
 }
 
 export default handlrs => (node, app) => {
+  console.log(handlrs)
   const render = () => (node.innerHTML = to_html(to_jsonml(app), handlrs))
 
   handlrs.reset()

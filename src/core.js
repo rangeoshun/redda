@@ -102,10 +102,10 @@ export const elem = fn => (attrs, ...cont) => {
 }
 
 export default handlrs => (node, app) => {
-  console.log(handlrs)
-  const render = () => (node.innerHTML = to_html(to_jsonml(app), handlrs))
+  const render = () => (
+    handlrs.reset(), (node.innerHTML = to_html(to_jsonml(app), handlrs))
+  )
 
-  handlrs.reset()
   render()
 
   return render

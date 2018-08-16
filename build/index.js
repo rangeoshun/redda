@@ -208,10 +208,8 @@ var redda = (function () {
   };
 
   var renderer = (handlrs => (node, app) => {
-    console.log(handlrs);
-    const render = () => node.innerHTML = to_html(to_jsonml(app), handlrs);
+    const render = () => (handlrs.reset(), node.innerHTML = to_html(to_jsonml(app), handlrs));
 
-    handlrs.reset();
     render();
 
     return render;
@@ -295,7 +293,7 @@ var redda = (function () {
 
     return {
       get: () => store_,
-      reset: () => reduc(keys_of(store_), (_$$1, key) => delete store_[key]),
+      reset: () => store_ = reduc(keys_of(store_), (store, key) => (delete store[key], store)),
       reg: handlr => {
         const [handlr_id, new_store] = reg(store_, handlr);
         store_ = new_store;

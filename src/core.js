@@ -76,7 +76,6 @@ export const to_jsonml = ([first, ...rest] = []) => {
     return _.compress([first, ...to_jsonml(rest)])
 
   if (_.is_arr(first)) return _.compress([to_jsonml(first), ...to_jsonml(rest)])
-
   if (_.is_fn(first)) return _.compress(to_jsonml(elem(first)(...rest)))
 
   return []

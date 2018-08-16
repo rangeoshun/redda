@@ -13,8 +13,13 @@ export const frag = (init_state, ...reducs) => {
     [_.sym(reducr)]: reducr
   }))
 
-  return (state = init_state, reducr, ...args) =>
-    (!_.is_fn(reducr) && state) || reducr_map[_.sym(reducr)](state, ...args)
+  console.log(init_state)
+
+  return (state = init_state, reducr, ...args) => {
+    if (!_.is_fn(reducr) && _.is_def(state)) return state
+
+    return reducr_map[_.sym(reducr)](state, ...args)
+  }
 }
 
 const add = (state = _init_state, init_frag, ...reducers) => {

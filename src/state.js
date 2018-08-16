@@ -13,8 +13,6 @@ export const frag = (init_state, ...reducs) => {
     [_.sym(reducr)]: reducr
   }))
 
-  console.log(init_state)
-
   return (state = init_state, reducr, ...args) => {
     if (!_.is_fn(reducr) && _.is_def(state)) return state
 

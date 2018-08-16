@@ -226,7 +226,11 @@ var redda = (function () {
       [_.sym(reducr)]: reducr
     }));
 
-    return (state = init_state, reducr, ...args) => !_.is_fn(reducr) && state || reducr_map[_.sym(reducr)](state, ...args);
+    return (state = init_state, reducr, ...args) => {
+      if (!_.is_fn(reducr) && _.is_def(state)) return state;
+
+      return reducr_map[_.sym(reducr)](state, ...args);
+    };
   };
 
   const add$1 = (state = _init_state, init_frag, ...reducers) => {

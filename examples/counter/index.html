@@ -1,0 +1,42 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    </head>
+    <body>
+        <div id="app-cont"></div>
+        <script src="../../build/index.js"></script>
+        <script>
+         const { div, br, button } = redda.dom
+         const state = redda.state()
+
+         const inc_count = (count) => (count + 1)
+         const dec_count = (count) => (count - 1)
+         const count = () => 0
+
+         state.add(count, inc_count, dec_count)
+
+         const app = ({ count }) => (
+             [div, { id: 'counter' },
+              `Count is: ${count}`,
+              [br],
+              [button, { onclick: (ev) => state.disp(inc_count) }, '+'],
+              [button, { onclick: (ev) => state.disp(dec_count) }, '-']
+             ]
+         )
+
+         const app_with_counter = state.conn(app, count)
+
+         const render_app = redda.render(
+             document.getElementById('app-cont'),
+             [app_with_counter]
+         )
+
+         state.on_change(render_app)
+        </script>
+    </body>
+</html>

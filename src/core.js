@@ -21,19 +21,19 @@ export const str_style = attrs => {
 }
 
 const is_style = key => key === 'style'
+const is_handl = key => key.match(/^on/)
 
 export const str_attrs = attrs => {
   if (!_.is_obj(attrs)) return ''
 
   return _.reduc(_.keys_of(attrs), '', (acc, key) => {
-    if (is_style(key))
-      return `${acc} ${_.transform_key(_.str(key))}="${str_style(
-        _.get(attrs, key),
-      )}"`
-    else
-      return `${acc} ${_.transform_key(_.str(key))}="${_.str(
-        _.get(attrs, key),
-      )}"`
+    const trans_key = _.transform_key(_.str(key))
+    const conc = `${acc} ${trans_key}=`
+
+    if (is_style(trans_key)) return conc + `"${str_style(_.get(attrs, key))}"`
+    if (is_handl(trans_key)) return conc + `"redda.events[${foo}]"`
+
+    return conc + `"${_.str(_.get(attrs, key))}"`
   })
 }
 
@@ -41,6 +41,7 @@ export const str_inner = (jsonml, html_arr = []) =>
   _.reduc(jsonml, html_arr, (acc, inner) => {
     if (_.is_str(inner)) return [...acc, inner]
     if (_.is_arr(inner)) return build_html(inner, acc)
+
     return acc
   })
 
@@ -61,9 +62,7 @@ export const wrap_tag = (first, second, ...rest) => {
 
 export const build_html = ([first, second, ...rest] = [], html = []) => {
   if (_.is_arr(first)) return [...html, ...str_inner([first, second, ...rest])]
-
   if (_.is_str(first)) return [...html, ...wrap_tag(first, second, ...rest)]
-
   if (_.is_sym(first))
     return [...html, ...wrap_tag(_.sym_to_str(first), second, ...rest)]
 
@@ -89,7 +88,7 @@ export const elem = fn => (attrs, ...cont) => {
   return fn({}, attrs, ...cont)
 }
 
-export default (node, app) => {
+export default handlrs => (node, app) => {
   const render = () => (node.innerHTML = to_html(to_jsonml(app)))
 
   render()

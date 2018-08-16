@@ -70,7 +70,11 @@ var redda = (function () {
 
   const compress = (subj = []) => reduc(subj, [], (acc, item) => is_def(item) && !is_null(item) && !is_empty(item) && [...acc, item] || acc);
 
-  const rnd_id = seed => ((new Date().getMilliseconds() + seed) * Math.PI + seed).toString(16).replace('.', '');
+  const rnd_id = () => {
+    const rnd = Math.random();
+
+    return (rnd * rnd + rnd).toString(16).replace('.', '');
+  };
 
   var _ = {
     noop,
@@ -137,45 +141,61 @@ var redda = (function () {
     return _.trim(_.reduc(_.keys_of(attrs), '', (acc, key) => `${acc} ${_.transform_key(_.str(key))}: ${str_style_attr(_.get(attrs, key))};`));
   };
 
-  const str_attrs = attrs => {
+  const is_style = key => key === 'style';
+  const is_handl = key => key.match(/^on/);
+
+  const str_attrs = (attrs, handlrs) => {
     if (!_.is_obj(attrs)) return '';
 
-    return _.reduc(_.keys_of(attrs), '', (acc, key) => key == 'style' && `${acc} ${_.transform_key(_.str(key))}="${str_style(_.get(attrs, key))}"` || `${acc} ${_.transform_key(_.str(key))}="${_.str(_.get(attrs, key))}"`);
+    return _.reduc(_.keys_of(attrs), '', (acc, key) => {
+      const trans_key = _.transform_key(_.str(key));
+      const conc = `${acc} ${trans_key}=`;
+      const val = _.get(attrs, key);
+
+      if (is_style(trans_key)) return conc + `"${str_style(val)}"`;
+
+      if (is_handl(trans_key)) {
+        const handlr_id = handlrs.reg(val);
+        return conc + `"redda.handlrs['${handlr_id}'](event)"`;
+      }
+
+      return conc + `"${_.str(val)}"`;
+    });
   };
 
-  const str_inner = (jsonml, html_arr = []) => _.reduc(jsonml, html_arr, (acc, inner) => {
+  const str_inner = (jsonml, html_arr = [], handlrs) => _.reduc(jsonml, html_arr, (acc, inner) => {
     if (_.is_str(inner)) return [...acc, inner];
-    if (_.is_arr(inner)) return build_html(inner, acc);
+    if (_.is_arr(inner)) return build_html(inner, acc, handlrs);
+
     return acc;
   });
 
-  const open_tag = (type, attrs) => `<${_.transform_key(type)}${str_attrs(attrs)}>`;
+  const open_tag = (type, attrs, handlrs) => `<${_.transform_key(type)}${str_attrs(attrs, handlrs)}>`;
 
   const close_tag = type => `</${_.transform_key(type)}>`;
 
-  const wrap_tag = (first, second, ...rest) => {
+  const wrap_tag = (handlrs, first, second, ...rest) => {
     const inner = !_.is_obj(second) && [second] || [];
 
-    return [open_tag(first, _.is_obj(second) && second), ...str_inner([...inner, ...rest]), close_tag(first)];
+    return [open_tag(first, _.is_obj(second) && second, handlrs), ...str_inner([...inner, ...rest]), close_tag(first)];
   };
 
-  const build_html = ([first, second, ...rest] = [], html = []) => {
-    if (_.is_arr(first)) return [...html, ...str_inner([first, second, ...rest])];
+  const build_html = ([first, second, ...rest] = [], html = [], handlrs) => {
+    if (_.is_arr(first)) return [...html, ...str_inner([first, second, ...rest], [], handlrs)];
 
-    if (_.is_str(first)) return [...html, ...wrap_tag(first, second, ...rest)];
+    if (_.is_str(first)) return [...html, ...wrap_tag(handlrs, first, second, ...rest)];
 
-    if (_.is_sym(first)) return [...html, ...wrap_tag(_.sym_to_str(first), second, ...rest)];
+    if (_.is_sym(first)) return [...html, ...wrap_tag(handlrs, _.sym_to_str(first), second, ...rest)];
 
     return html;
   };
 
-  const to_html = jsonml => _.join(build_html(jsonml));
+  const to_html = (jsonml, handlrs) => _.join(build_html(jsonml, [], handlrs));
 
   const to_jsonml = ([first, ...rest] = []) => {
     if (_.is_str(first) || _.is_sym(first) || _.is_obj(first)) return _.compress([first, ...to_jsonml(rest)]);
 
     if (_.is_arr(first)) return _.compress([to_jsonml(first), ...to_jsonml(rest)]);
-
     if (_.is_fn(first)) return _.compress(to_jsonml(elem(first)(...rest)));
 
     return [];
@@ -187,9 +207,10 @@ var redda = (function () {
     return fn({}, attrs, ...cont);
   };
 
-  var render = ((node, app) => {
-    const render = () => node.innerHTML = to_html(to_jsonml(app));
+  var renderer = (handlrs => (node, app) => {
+    const render = () => node.innerHTML = to_html(to_jsonml(app), handlrs);
 
+    handlrs.reset();
     render();
 
     return render;
@@ -246,7 +267,7 @@ var redda = (function () {
     const set$$1 = new_state => (state_ = new_state, undef$1);
 
     return {
-      add: (init_frag, ...reducers) => set$$1(add$1(get$$1(), init_frag, ...reducers)),
+      add: (init_frag, ...reducrs) => set$$1(add$1(get$$1(), init_frag, ...reducrs)),
       conn: (elem, ...frags) => conn(get$$1, elem, ...frags),
       disp: (reducr, ...args) => (set$$1(disp(get$$1(), reducr, ...args)), call_on_change(get$$1()[on_change_sym])),
       on_change: fn => set$$1(_extends({}, get$$1(), { [on_change_sym]: [...get$$1()[on_change_sym], fn] })),
@@ -254,6 +275,31 @@ var redda = (function () {
       get: () => get_state(get$$1())
     };
   };
+
+  const reg = (store, handlr) => {
+    handlr_id = rnd_id();
+
+    const new_store = _extends({}, store, {
+      [handlr_id]: handlr
+    });
+    return [handlr_id, new_store];
+  };
+
+  const handlrs = store_ => {
+    store_ = {};
+
+    return {
+      reset: () => reduc(keys_of(state_), (_$$1, key) => delete store_[key]),
+      reg: handlr => {
+        const [handlr_id, new_store] = reg(store, handlr);
+        store_ = new_store;
+
+        return handlr_id;
+      }
+    };
+  };
+
+  const render = renderer(handlrs);
 
   var index = {
     consts: undef$1,

@@ -35,7 +35,7 @@ export const str_attrs = (attrs, handlrs) => {
 
     if (is_handl(trans_key)) {
       const handlr_id = handlrs.reg(val)
-      return conc + `"redda.events[${handlr_id}]"`
+      return conc + `"redda.handlrs['${handlr_id}']"`
     }
 
     return conc + `"${_.str(val)}"`

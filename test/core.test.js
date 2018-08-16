@@ -17,6 +17,11 @@ test('#str_style', () => (
   expect(str_style({ FOO: 1, bar_baz: 'bar' })).toBe('foo: 1; bar-baz: bar;')
 ))
 
+const mock_handlr = () => null
+const mock_handlrs = {
+  reg: fn => (expect(fn).toBe(mock_handlr), 'foo')
+}
+
 test('#str_attrs', () => (
   expect(str_attrs({ foo: 'foo', bar: 'bar' })).toBe(' foo="foo" bar="bar"'),
   expect(str_attrs({ FOO: 'foo', bar_baz: 'bar' })).toBe(
@@ -24,7 +29,10 @@ test('#str_attrs', () => (
   ),
   expect(
     str_attrs({ foo: { bar: 'bar' }, style: { FOO: 1, bar_baz: 'bar' } })
-  ).toBe(' foo="{"bar":"bar"}" style="foo: 1; bar-baz: bar;"')
+  ).toBe(' foo="{"bar":"bar"}" style="foo: 1; bar-baz: bar;"'),
+  expect(str_attrs({ onclick: mock_handlr }, mock_handlrs)).toBe(
+    ' onclick="redda.handlrs[\'foo\']"'
+  )
 ))
 
 test('#open_tag', () => (
@@ -100,8 +108,10 @@ test('#to_html', () => (
   expect(to_html([div])).toEqual('<div></div>'),
   expect(to_html(to_jsonml([app]))).toEqual(
     `<div id="app" style="display: flex;"><div id="head" style="height: 50px; flex-shrink: 0;">Title</div><div id="body">Nice app</div></div>`
-  ) //,
-  //expect(to_html(['div', { onclick: () => 'foo' }])).toEqual('<div></div>')
+  ),
+  expect(to_html(['div', { onclick: mock_handlr }], mock_handlrs)).toEqual(
+    `<div onclick="redda.handlrs['foo']"></div>`
+  )
 ))
 
 test('#elem', () => (

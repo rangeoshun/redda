@@ -31,7 +31,7 @@ test('#str_attrs', () => (
     str_attrs({ foo: { bar: 'bar' }, style: { FOO: 1, bar_baz: 'bar' } })
   ).toBe(' foo="{"bar":"bar"}" style="foo: 1; bar-baz: bar;"'),
   expect(str_attrs({ onclick: mock_handlr }, mock_handlrs)).toBe(
-    ' onclick="redda.handlrs[\'foo\']"'
+    ' onclick="redda.handlrs[\'foo\'](event)"'
   )
 ))
 
@@ -110,7 +110,7 @@ test('#to_html', () => (
     `<div id="app" style="display: flex;"><div id="head" style="height: 50px; flex-shrink: 0;">Title</div><div id="body">Nice app</div></div>`
   ),
   expect(to_html(['div', { onclick: mock_handlr }], mock_handlrs)).toEqual(
-    `<div onclick="redda.handlrs['foo']"></div>`
+    `<div onclick="redda.handlrs['foo'](event)"></div>`
   )
 ))
 

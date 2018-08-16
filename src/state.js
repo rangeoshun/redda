@@ -65,7 +65,7 @@ const state = state_ => {
   const set = new_state => ((state_ = new_state), undef)
 
   return {
-    add: (init_frag, ...reducers) => set(add(get(), init_frag, ...reducers)),
+    add: (init_frag, ...reducrs) => set(add(get(), init_frag, ...reducrs)),
     conn: (elem, ...frags) => conn(get, elem, ...frags),
     disp: (reducr, ...args) => (
       set(disp(get(), reducr, ...args)), call_on_change(get()[on_change_sym])

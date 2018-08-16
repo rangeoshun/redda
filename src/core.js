@@ -14,9 +14,9 @@ export const str_style = attrs => {
       '',
       (acc, key) =>
         `${acc} ${_.transform_key(_.str(key))}: ${str_style_attr(
-          _.get(attrs, key),
-        )};`,
-    ),
+          _.get(attrs, key)
+        )};`
+    )
   )
 }
 
@@ -56,7 +56,7 @@ export const wrap_tag = (first, second, ...rest) => {
   return [
     open_tag(first, _.is_obj(second) && second),
     ...str_inner([...inner, ...rest]),
-    close_tag(first),
+    close_tag(first)
   ]
 }
 
@@ -91,6 +91,7 @@ export const elem = fn => (attrs, ...cont) => {
 export default handlrs => (node, app) => {
   const render = () => (node.innerHTML = to_html(to_jsonml(app)))
 
+  handlrs.reset()
   render()
 
   return render

@@ -102,8 +102,9 @@ export const elem = fn => (attrs, ...cont) => {
 }
 
 export default handlrs => (node, app) => {
+  const shadow = node.attachShadow({ mode: 'closed' })
   const render = () => (
-    handlrs.reset(), (node.innerHTML = to_html(to_jsonml(app), handlrs))
+    handlrs.reset(), (shadow.innerHTML = to_html(to_jsonml(app), handlrs))
   )
 
   render()

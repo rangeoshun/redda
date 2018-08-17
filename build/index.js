@@ -208,7 +208,8 @@ var redda = (function () {
   };
 
   var renderer = (handlrs => (node, app) => {
-    const render = () => (handlrs.reset(), node.innerHTML = to_html(to_jsonml(app), handlrs));
+    const shadow = node.attachShadow({ mode: 'closed' });
+    const render = () => (handlrs.reset(), shadow.innerHTML = to_html(to_jsonml(app), handlrs));
 
     render();
 
@@ -225,7 +226,9 @@ var redda = (function () {
     }));
 
     return (state = init_state, reducr, ...args) => {
-      if (!_.is_fn(reducr) && _.is_def(state)) return state;
+      const fn = reducr_map[_.sym(reducr)];
+
+      if (!_.is_fn(reducr) && _.is_def(state) || !_.is_fn(fn)) return state;
 
       return reducr_map[_.sym(reducr)](state, ...args);
     };

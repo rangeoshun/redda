@@ -180,6 +180,25 @@ Now, after `state.disp(set_value, 3)` our app will rerender and look like this:
 <h1>Value is 3</h1>
 ```
 
+#### Event handling
+
+All modern apps need event handling. While you could render the site, and attach event listeners yourself, it is included in Redda. For this it utilizes the standard HTML event listener attributes like `onclick`. `mousedown`, etc. You just need to include these in your `attrs` object.
+
+```javascript
+const { button } = redda.dom
+const element = () => [button, { onclick: (ev) => console.log(ev) }, 'CLICK ME']
+  
+redda.render(document.getElementById('app-cont'), [element])
+```
+
+This will result in the following HTML:
+
+```html
+<button onclick="redda.handlrs.get()['05a1a4e89fb04'](event)">CLICK ME</button>
+```
+
+As seen, Redda registered the event listener for you, and will pass the event object. You can access everithing in that specific clojure, which will enable you to manipulate state.
+
 ## Examples
 
 To see an example please clone repo and browse the examples folder.
@@ -187,14 +206,30 @@ To see an example please clone repo and browse the examples folder.
 ```shell
 $ https://github.com/rangeoshun/redda.git
 $ cd redda
+```
+
+### Clock example
+
+A simple state demo, displaying current time.
+
+```shell
 $ open examples/clock/index.html
+```
+
+### Counter demo
+
+A more advanced demo, demonstrating the event handling through a counter which you can increment or decrement.
+
+```shell
+$ open examples/counter/index.html
 ```
 
 ## To come
 
 - [x] State management
-- [ ] Event handling
+- [x] Event handling
 - [ ] Meaningful error messages
+- [ ] Add more tests
 - [ ] Other goodies
 
 ## Instructions

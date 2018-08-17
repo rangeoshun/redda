@@ -11,7 +11,7 @@
         <div id="app-cont"></div>
         <script src="../../build/index.js"></script>
         <script>
-         const { div, br, input, button } = redda.dom
+         const { div, br, hr, input, button } = redda.dom
          const { rnd_id, reduc } = redda.utils
          const state = redda.state()
 
@@ -25,7 +25,6 @@
                  [input,
                   {type: 'text',
                    onchange: (ev) => state.disp(update_form, ev.target.value || ''),
-                   onblur: (ev) => state.disp(update_form, ev.target.value || ''),
                    value: todo_form}]
              ),
              todo_form
@@ -47,7 +46,6 @@
 
          const todo_list = state.conn(
              ({ todos: { list } }) => (
-                 console.log(list),
                  [div,
                   {id: 'todo_list'},
                   ...reduc(list, [], (acc, { id, note, done }) => ([
@@ -57,7 +55,7 @@
                         style: done ? {} : {}
                        },
                        note
-                      ]
+                      ], [hr]
                   ]))]
              ),
              todos
@@ -81,6 +79,7 @@
               {id: 'todos'},
               [todo_input],
               [add_todo_button],
+              [hr],
               [todo_list]]
          )
 

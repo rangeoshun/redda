@@ -17,11 +17,7 @@ const handlrs = store_ => {
 
   return {
     get: () => store_,
-    reset: () =>
-      (store_ = reduc(
-        keys_of(store_),
-        (store, key) => (delete store[key], store)
-      )),
+    reset: () => (store_ = {}),
     reg: handlr => {
       const [handlr_id, new_store] = reg(store_, handlr)
       store_ = new_store

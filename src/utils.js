@@ -60,7 +60,10 @@ export const flow = (...fns) => subj => reduc(fns, subj, (acc, fn) => fn(acc))
 export const to_lower = subj => str(subj).toLowerCase()
 
 export const sanitize = subj =>
-  repl(subj, RegExp(`[${join(uniq(split(repl(subj, /[a-z-]/g, ''))))}]`, 'g'))
+  repl(
+    subj,
+    RegExp(`[${join(uniq(split(repl(subj, /[a-z0-9-]/g, ''))))}]`, 'g')
+  )
 
 export const to_dashed = subj => repl(subj, '_', '-')
 

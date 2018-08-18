@@ -120,12 +120,12 @@ test('#flow', () => (
 test('#to_lower', () => expect(_.to_lower('FOO')).toBe('foo'))
 
 test('#sanitize', () =>
-  expect(_.sanitize('<foo-OOO_!@#$%^&&*(?){} />')).toBe('foo-'))
+  expect(_.sanitize('<foo-1OOO_!@#$%^&&*(?){} />')).toBe('foo-1'))
 
 test('#to_dashed', () => expect(_.to_dashed('foo_bar')).toBe('foo-bar'))
 
 test('#transform_key', () =>
-  expect(_.transform_key('<FOO_bar>')).toBe('foo-bar'))
+  expect(_.transform_key('<FOO_bar1>')).toBe('foo-bar1'))
 
 test('#add_to', () => expect(_.add_to([], 1)).toEqual([1]))
 

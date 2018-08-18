@@ -152,3 +152,23 @@ const syms = _.reduc(tags, {}, (acc, tag) => ({
 }))
 
 export default { ...syms }
+
+export const sc_tags = [
+  syms.area,
+  syms.base,
+  syms.br,
+  syms.col,
+  syms.command,
+  syms.embed,
+  syms.hr,
+  syms.img,
+  syms.input,
+  syms.keygen,
+  syms.link,
+  syms.menuitem,
+  syms.meta,
+  syms.param,
+  syms.source,
+  syms.track,
+  syms.wbr
+]

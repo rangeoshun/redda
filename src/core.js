@@ -22,6 +22,7 @@ export const str_style = attrs => {
 }
 
 const is_style = key => key === 'style'
+const is_value = key => key === 'value'
 const is_handl = key => key.match(/^on/)
 
 const reg_handlr = (handlrs, val) =>
@@ -136,24 +137,55 @@ const update_node = (elem, node, handlrs) => {
 
       if (!attr || _.is_def(second[attr])) return
 
-      node.setAttribute(attr, '')
+      node.removeAttribute(attr)
     })
 
     _.reduc(elem_keys, null, (__, key) => {
-      let val = second[key]
+      const val = second[key]
 
-      if (is_style(key)) val = str_style(val)
-      else if (is_handl(key)) val = reg_handlr(handlrs, val)
+      if (is_style(key)) {
+        if (!val) {
+          node.removeAttribute(key)
+          return
+        }
 
-      node.setAttribute(key, val)
+        const style_str = str_style(val)
+        val && style_str != node[key] && (node[key] = style_str)
+        return
+      }
+
+      if (is_handl(key)) {
+        node.removeAttribute(key)
+        node[key] = val
+        return
+      }
+
+      if (is_value(key)) {
+        node.removeAttribute(key)
+        node.value = val
+        return
+      }
+
+      if (val) node.setAttribute(key, val)
+      else node.removeAttribute(key)
     })
 
-    console.log(rest)
-    update_build_html(rest, node, handlrs)
+    const child_nodes = node.childNodes
+
+    if (rest.length && !child_nodes.length) {
+      update_build_html(rest, node, handlrs)
+      return
+    }
+
+    update_nodes(rest, node.childNodes, handlrs)
     return
   }
 
-  update_build_html([second, ...rest], node, handlrs)
+  if (!second) return
+
+  update_nodes([second, ...rest], node.childNodes, handlrs)
+
+  //update_build_html([second, ...rest], node, handlrs)
 }
 
 const update_nodes = (
@@ -163,8 +195,13 @@ const update_nodes = (
 ) => {
   if (!elem) return
 
-  if (is_text(elem)) update_text_node(elem, node)
+  if (is_text(node)) update_text_node(elem, node)
   else update_node(elem, node, handlrs)
+
+  if (rest_elems.length && !rest_nodes.length) {
+    node.parentNode.innerHTML += to_html(rest_elems, handlrs)
+    return
+  }
 
   update_nodes(rest_elems, rest_nodes, handlrs)
 }
@@ -179,7 +216,7 @@ const is_coll_match = (jsonml, nodes) => {
   })
 }
 
-const is_text = node => node.nodeName === '#text'
+const is_text = node => node && node.nodeName === '#text'
 
 const is_match = (jsonml, node) => {
   if (!node) return false
@@ -197,8 +234,6 @@ const render_ = handlrs => (node, app) => {
   const render = () => (
     handlrs.reset(), update_build_html([to_jsonml(app)], node, handlrs)
   )
-
-  console.log(to_jsonml(app))
 
   render()
 

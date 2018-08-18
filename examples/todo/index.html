@@ -11,7 +11,7 @@
         <div id="app-cont"></div>
         <script src="../../build/index.js"></script>
         <script>
-         const { div, br, hr, input, button } = redda.dom
+         const { div, br, hr, h1, input, button } = redda.dom
          const { rnd_id, reduc } = redda.utils
          const state = redda.state()
 
@@ -77,6 +77,8 @@
          const app = () => (
              [div,
               {id: 'todos'},
+              [h1, "REDDA TODO"],
+              [br],
               [todo_input],
               [add_todo_button],
               [hr],

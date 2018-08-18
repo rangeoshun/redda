@@ -23,22 +23,23 @@ export const str_style = attrs => {
 const is_style = key => key === 'style'
 const is_handl = key => key.match(/^on/)
 
+const reg_handlr = (handlrs, val) =>
+  `"redda.handlrs.get()['${handlrs.reg(val)}'](event)"`
+
 export const str_attrs = (attrs, handlrs) => {
   if (!_.is_obj(attrs)) return ''
 
   return _.reduc(_.keys_of(attrs), '', (acc, key) => {
     const trans_key = _.transform_key(_.str(key))
     const conc = `${acc} ${trans_key}=`
+
     const val = _.get(attrs, key)
 
     if (is_style(trans_key)) return conc + `"${str_style(val)}"`
 
-    if (is_handl(trans_key)) {
-      const handlr_id = handlrs.reg(val)
-      return conc + `"redda.handlrs.get()['${handlr_id}'](event)"`
-    }
+    if (is_handl(trans_key)) return conc + reg_handlr(handlrs, val)
 
-    return conc + `"${_.str(val)}"`
+    return conc + `"${_.is_str(val) ? val : _.str(val)}"`
   })
 }
 
@@ -83,7 +84,7 @@ export const build_html = (
   return html
 }
 
-export const to_html = (jsonml, handlrs, node) =>
+export const to_html = (jsonml, handlrs) =>
   _.join(build_html(jsonml, [], handlrs))
 
 export const to_jsonml = ([first, ...rest] = []) => {
@@ -102,11 +103,101 @@ export const elem = fn => (attrs, ...cont) => {
   return fn({}, attrs, ...cont)
 }
 
-export default handlrs => (node, app) => {
+export const update_build_html = (jsonml = [], node, handlrs) => {
+  let [first, second, ...rest] = jsonml
+
+  console.log('update_build_html', jsonml)
+
+  if (node.childNodes.length && _.is_arr(first)) {
+    return update_nodes(jsonml, node.childNodes, handlrs)
+  }
+
+  //if (is_match(jsonml, node, handlrs)) return update_node(jsonml, node, handlrs)
+
+  node.innerHTML = to_html(jsonml, handlrs, node)
+}
+
+const update_text_node = (text, node) => (node.textValue = text)
+
+const update_node = (elem, node, handlrs) => {
+  const [first, second, ...rest] = elem
+
+  if (_.is_obj(second)) {
+    const attrs = node.attributes
+    const elem_keys = _.keys_of(second)
+
+    _.reduc(_.keys_of(attrs), null, (__, index) => {
+      const attr = attrs[index].name
+
+      if (!attr || _.is_def(second[attr])) return
+
+      node.setAttribute(attr, '')
+    })
+
+    _.reduc(elem_keys, null, (__, key) => {
+      let val = second[key]
+
+      if (is_style(key)) val = str_style(val)
+      else if (is_handl(key)) val = reg_handlr(handlrs, val)
+
+      node.setAttribute(key, val)
+    })
+
+    console.log(rest)
+    update_build_html(rest, node, handlrs)
+    return
+  }
+
+  update_build_html([second, ...rest], node, handlrs)
+}
+
+const update_nodes = (
+  [elem, ...rest_elems],
+  [node, ...rest_nodes],
+  handlrs
+) => {
+  if (!elem) return
+
+  if (is_text(elem)) update_text_node(elem, node)
+  else update_node(elem, node, handlrs)
+
+  update_nodes(rest_elems, rest_nodes, handlrs)
+}
+
+const is_coll_match = (jsonml, nodes) => {
+  if (jsonml.length !== nodes.length) return false
+
+  return _.reduc(jsonml, true, (verd, elem, index) => {
+    if (!verd) return verd
+
+    return is_match(elem, nodes[index])
+  })
+}
+
+const is_text = node => node.nodeName === '#text'
+
+const is_match = (jsonml, node) => {
+  if (!node) return false
+
+  if (_.is_str(jsonml) && is_text(node)) return true
+
+  const [first_, second, ...rest] = jsonml
+  const first = _.is_sym(first_) ? _.sym_to_str(first_) : first_
+
+  return first == node.localName
+}
+
+const render_ = handlrs => (node, app) => {
   //  const shadow = node.attachShadow({ mode: 'open' })
-  const render = () => (handlrs.reset(), to_html(node, app, handlrs))
+  const render = () => (
+    handlrs.reset(), update_build_html([to_jsonml(app)], node, handlrs)
+  )
+
+  console.log(to_jsonml(app))
 
   render()
 
   return render
 }
+
+export default render_

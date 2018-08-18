@@ -52,7 +52,7 @@ var redda = (function () {
 
   const to_lower = subj => str(subj).toLowerCase();
 
-  const sanitize = subj => repl(subj, RegExp(`[${join(uniq(split(repl(subj, /[a-z-]/g, ''))))}]`, 'g'));
+  const sanitize = subj => repl(subj, RegExp(`[${join(uniq(split(repl(subj, /[a-z0-9-]/g, ''))))}]`, 'g'));
 
   const to_dashed = subj => repl(subj, '_', '-');
 
@@ -125,7 +125,7 @@ var redda = (function () {
     return target;
   };
 
-  const tags = ['a', 'abbr', 'acronym', 'address', 'applet', 'area', 'article', 'aside', 'audio', 'b', 'base', 'basefont', 'bdi', 'bdo', 'bgsound', 'big', 'blink', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'command', 'content', 'data', 'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'dir', 'div', 'dl', 'dt', 'element', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'font', 'footer', 'form', 'frame', 'frameset', 'h1', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'iframe', 'image', 'img', 'input', 'ins', 'isindex', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'listing', 'main', 'map', 'mark', 'marquee', 'menu', 'menuitem', 'meta', 'meter', 'multicol', 'nav', 'nextid', 'nobr', 'noembed', 'noframes', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'picture', 'plaintext', 'pre', 'progress', 'q', 'rp', 'rt', 'rtc', 'ruby', 's', 'samp', 'script', 'section', 'select', 'shadow', 'slot', 'small', 'source', 'spacer', 'span', 'strike', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'tt', 'u', 'ul', 'var', 'video', 'wbr', 'xmp'];
+  const tags = ['a', 'abbr', 'acronym', 'address', 'applet', 'area', 'article', 'aside', 'audio', 'b', 'base', 'basefont', 'bdi', 'bdo', 'bgsound', 'big', 'blink', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'command', 'content', 'data', 'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'dir', 'div', 'dl', 'dt', 'element', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'font', 'footer', 'form', 'frame', 'frameset', 'h1', 'h2', 'h3', 'h4', 'h5', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'iframe', 'image', 'img', 'input', 'ins', 'isindex', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'listing', 'main', 'map', 'mark', 'marquee', 'menu', 'menuitem', 'meta', 'meter', 'multicol', 'nav', 'nextid', 'nobr', 'noembed', 'noframes', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'picture', 'plaintext', 'pre', 'progress', 'q', 'rp', 'rt', 'rtc', 'ruby', 's', 'samp', 'script', 'section', 'select', 'shadow', 'slot', 'small', 'source', 'spacer', 'span', 'strike', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'tt', 'u', 'ul', 'var', 'video', 'wbr', 'xmp'];
 
   const syms = _.reduc(tags, {}, (acc, tag) => _extends({}, acc, {
     [tag]: Symbol.for(tag)
@@ -144,22 +144,22 @@ var redda = (function () {
   const is_style = key => key === 'style';
   const is_handl = key => key.match(/^on/);
 
+  const reg_handlr = (handlrs, val) => `"redda.handlrs.get()['${handlrs.reg(val)}'](event)"`;
+
   const str_attrs = (attrs, handlrs) => {
     if (!_.is_obj(attrs)) return '';
 
     return _.reduc(_.keys_of(attrs), '', (acc, key) => {
       const trans_key = _.transform_key(_.str(key));
       const conc = `${acc} ${trans_key}=`;
+
       const val = _.get(attrs, key);
 
       if (is_style(trans_key)) return conc + `"${str_style(val)}"`;
 
-      if (is_handl(trans_key)) {
-        const handlr_id = handlrs.reg(val);
-        return conc + `"redda.handlrs.get()['${handlr_id}'](event)"`;
-      }
+      if (is_handl(trans_key)) return conc + reg_handlr(handlrs, val);
 
-      return conc + `"${_.str(val)}"`;
+      return conc + `"${_.is_str(val) ? val : _.str(val)}"`;
     });
   };
 
@@ -180,7 +180,7 @@ var redda = (function () {
     return [open_tag(first, _.is_obj(second) && second, handlrs), ...str_inner([...inner, ...rest], [], handlrs), close_tag(first)];
   };
 
-  const build_html = ([first, second, ...rest] = [], html = [], handlrs) => {
+  const build_html = ([first, second, ...rest] = [], html = [], handlrs, nodes) => {
     if (_.is_arr(first)) return [...html, ...str_inner([first, second, ...rest], [], handlrs)];
 
     if (_.is_str(first)) return [...html, ...wrap_tag(handlrs, first, second, ...rest)];
@@ -207,14 +207,73 @@ var redda = (function () {
     return fn({}, attrs, ...cont);
   };
 
-  var renderer = (handlrs => (node, app) => {
-    const shadow = node.attachShadow({ mode: 'closed' });
-    const render = () => (handlrs.reset(), shadow.innerHTML = to_html(to_jsonml(app), handlrs));
+  const update_build_html = (jsonml = [], node, handlrs) => {
+    let [first, second, ...rest] = jsonml;
+
+    console.log('update_build_html', jsonml);
+
+    if (node.childNodes.length && _.is_arr(first)) {
+      return update_nodes(jsonml, node.childNodes, handlrs);
+    }
+
+    //if (is_match(jsonml, node, handlrs)) return update_node(jsonml, node, handlrs)
+
+    node.innerHTML = to_html(jsonml, handlrs, node);
+  };
+
+  const update_text_node = (text, node) => node.textValue = text;
+
+  const update_node = (elem, node, handlrs) => {
+    const [first, second, ...rest] = elem;
+
+    if (_.is_obj(second)) {
+      const attrs = node.attributes;
+      const elem_keys = _.keys_of(second);
+
+      _.reduc(_.keys_of(attrs), null, (__, index) => {
+        const attr = attrs[index].name;
+
+        if (!attr || _.is_def(second[attr])) return;
+
+        node.setAttribute(attr, '');
+      });
+
+      _.reduc(elem_keys, null, (__, key) => {
+        let val = second[key];
+
+        if (is_style(key)) val = str_style(val);else if (is_handl(key)) val = reg_handlr(handlrs, val);
+
+        node.setAttribute(key, val);
+      });
+
+      console.log(rest);
+      update_build_html(rest, node, handlrs);
+      return;
+    }
+
+    update_build_html([second, ...rest], node, handlrs);
+  };
+
+  const update_nodes = ([elem, ...rest_elems], [node, ...rest_nodes], handlrs) => {
+    if (!elem) return;
+
+    if (is_text(elem)) update_text_node(elem, node);else update_node(elem, node, handlrs);
+
+    update_nodes(rest_elems, rest_nodes, handlrs);
+  };
+
+  const is_text = node => node.nodeName === '#text';
+
+  const render_ = handlrs => (node, app) => {
+    //  const shadow = node.attachShadow({ mode: 'open' })
+    const render = () => (handlrs.reset(), update_build_html([to_jsonml(app)], node, handlrs));
+
+    console.log(to_jsonml(app));
 
     render();
 
     return render;
-  });
+  };
 
   const reducs_sym = _.sym(':reducs');
   const on_change_sym = _.sym(':on_change');
@@ -307,7 +366,7 @@ var redda = (function () {
   };
 
   const handlrs$1 = handlrs();
-  const render = renderer(handlrs$1);
+  const render = render_(handlrs$1);
 
   var index = {
     consts: undef$1,

@@ -1,6 +1,7 @@
 'use strict'
 
 import undef from './consts'
+import { sc_tags } from './dom_syms.js'
 import _ from './utils'
 
 export const str_style_attr = val => (!_.is_str(val) && val) || _.str(`${val}`)
@@ -51,14 +52,18 @@ export const str_inner = (jsonml, html_arr = [], handlrs) =>
     return acc
   })
 
-export const open_tag = (type, attrs, handlrs) =>
-  `<${_.transform_key(type)}${str_attrs(attrs, handlrs)}>`
+const is_sc = tag => sc_tags.includes(_.sym(tag))
 
-export const close_tag = type => `</${_.transform_key(type)}>`
+export const open_tag = (type, attrs, handlrs) =>
+  `<${_.transform_key(type)}${str_attrs(attrs, handlrs)}${
+    !is_sc(type) ? ' /' : ''
+  }>`
+
+export const close_tag = type =>
+  !is_sc(type) ? `</${_.transform_key(type)}>` : ''
 
 export const wrap_tag = (handlrs, first, second, ...rest) => {
   const inner = (!_.is_obj(second) && [second]) || []
-
   return [
     open_tag(first, _.is_obj(second) && second, handlrs),
     ...str_inner([...inner, ...rest], [], handlrs),

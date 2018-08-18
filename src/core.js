@@ -68,7 +68,8 @@ export const wrap_tag = (handlrs, first, second, ...rest) => {
 export const build_html = (
   [first, second, ...rest] = [],
   html = [],
-  handlrs
+  handlrs,
+  nodes
 ) => {
   if (_.is_arr(first))
     return [...html, ...str_inner([first, second, ...rest], [], handlrs)]
@@ -82,7 +83,7 @@ export const build_html = (
   return html
 }
 
-export const to_html = (jsonml, handlrs) =>
+export const to_html = (jsonml, handlrs, node) =>
   _.join(build_html(jsonml, [], handlrs))
 
 export const to_jsonml = ([first, ...rest] = []) => {
@@ -102,10 +103,8 @@ export const elem = fn => (attrs, ...cont) => {
 }
 
 export default handlrs => (node, app) => {
-  const shadow = node.attachShadow({ mode: 'closed' })
-  const render = () => (
-    handlrs.reset(), (shadow.innerHTML = to_html(to_jsonml(app), handlrs))
-  )
+  //  const shadow = node.attachShadow({ mode: 'open' })
+  const render = () => (handlrs.reset(), to_html(node, app, handlrs))
 
   render()
 

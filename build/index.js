@@ -133,6 +133,8 @@ var redda = (function () {
 
   var dom = _extends({}, syms);
 
+  const sc_tags = [syms.area, syms.base, syms.br, syms.col, syms.command, syms.embed, syms.hr, syms.img, syms.input, syms.keygen, syms.link, syms.menuitem, syms.meta, syms.param, syms.source, syms.track, syms.wbr];
+
   const str_style_attr = val => !_.is_str(val) && val || _.str(`${val}`);
 
   const str_style = attrs => {
@@ -142,6 +144,7 @@ var redda = (function () {
   };
 
   const is_style = key => key === 'style';
+  const is_value = key => key === 'value';
   const is_handl = key => key.match(/^on/);
 
   const reg_handlr = (handlrs, val) => `"redda.handlrs.get()['${handlrs.reg(val)}'](event)"`;
@@ -170,13 +173,14 @@ var redda = (function () {
     return acc;
   });
 
-  const open_tag = (type, attrs, handlrs) => `<${_.transform_key(type)}${str_attrs(attrs, handlrs)}>`;
+  const is_sc = tag => sc_tags.includes(_.sym(tag));
 
-  const close_tag = type => `</${_.transform_key(type)}>`;
+  const open_tag = (type, attrs, handlrs) => `<${_.transform_key(type)}${str_attrs(attrs, handlrs)}${!is_sc(type) ? ' /' : ''}>`;
+
+  const close_tag = type => !is_sc(type) ? `</${_.transform_key(type)}>` : '';
 
   const wrap_tag = (handlrs, first, second, ...rest) => {
     const inner = !_.is_obj(second) && [second] || [];
-
     return [open_tag(first, _.is_obj(second) && second, handlrs), ...str_inner([...inner, ...rest], [], handlrs), close_tag(first)];
   };
 
@@ -235,40 +239,74 @@ var redda = (function () {
 
         if (!attr || _.is_def(second[attr])) return;
 
-        node.setAttribute(attr, '');
+        node.removeAttribute(attr);
       });
 
       _.reduc(elem_keys, null, (__, key) => {
-        let val = second[key];
+        const val = second[key];
 
-        if (is_style(key)) val = str_style(val);else if (is_handl(key)) val = reg_handlr(handlrs, val);
+        if (is_style(key)) {
+          if (!val) {
+            node.removeAttribute(key);
+            return;
+          }
 
-        node.setAttribute(key, val);
+          const style_str = str_style(val);
+          val && style_str != node[key] && (node[key] = style_str);
+          return;
+        }
+
+        if (is_handl(key)) {
+          node.removeAttribute(key);
+          node[key] = val;
+          return;
+        }
+
+        if (is_value(key)) {
+          node.removeAttribute(key);
+          node.value = val;
+          return;
+        }
+
+        if (val) node.setAttribute(key, val);else node.removeAttribute(key);
       });
 
-      console.log(rest);
-      update_build_html(rest, node, handlrs);
+      const child_nodes = node.childNodes;
+
+      if (rest.length && !child_nodes.length) {
+        update_build_html(rest, node, handlrs);
+        return;
+      }
+
+      update_nodes(rest, node.childNodes, handlrs);
       return;
     }
 
-    update_build_html([second, ...rest], node, handlrs);
+    if (!second) return;
+
+    update_nodes([second, ...rest], node.childNodes, handlrs);
+
+    //update_build_html([second, ...rest], node, handlrs)
   };
 
   const update_nodes = ([elem, ...rest_elems], [node, ...rest_nodes], handlrs) => {
     if (!elem) return;
 
-    if (is_text(elem)) update_text_node(elem, node);else update_node(elem, node, handlrs);
+    if (is_text(node)) update_text_node(elem, node);else update_node(elem, node, handlrs);
+
+    if (rest_elems.length && !rest_nodes.length) {
+      node.parentNode.innerHTML += to_html(rest_elems, handlrs);
+      return;
+    }
 
     update_nodes(rest_elems, rest_nodes, handlrs);
   };
 
-  const is_text = node => node.nodeName === '#text';
+  const is_text = node => node && node.nodeName === '#text';
 
   const render_ = handlrs => (node, app) => {
     //  const shadow = node.attachShadow({ mode: 'open' })
     const render = () => (handlrs.reset(), update_build_html([to_jsonml(app)], node, handlrs));
-
-    console.log(to_jsonml(app));
 
     render();
 
@@ -355,7 +393,7 @@ var redda = (function () {
 
     return {
       get: () => store_,
-      reset: () => store_ = reduc(keys_of(store_), (store, key) => (delete store[key], store)),
+      reset: () => store_ = {},
       reg: handlr => {
         const [handlr_id, new_store] = reg(store_, handlr);
         store_ = new_store;

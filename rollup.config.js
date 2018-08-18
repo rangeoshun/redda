@@ -11,17 +11,21 @@ export default {
       format: 'iife',
       name: 'redda',
       sourcemap: true,
-      extend: false
-    }
+      extend: false,
+    },
   ],
+  watch: {
+    chokidar: true,
+    exclude: ['node_modules/**'],
+  },
   plugins: [
     babel({
       presets: false,
       plugins: ['external-helpers', 'transform-object-rest-spread'],
-      babelrc: false
+      babelrc: false,
     }),
     resolve(),
-    commonjs()
-    // closure()
-  ]
+    commonjs(),
+    // closure(),
+  ],
 }

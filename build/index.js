@@ -175,7 +175,7 @@ var redda = (function () {
 
   const is_sc = tag => sc_tags.includes(_.sym(tag));
 
-  const open_tag = (type, attrs, handlrs) => `<${_.transform_key(type)}${str_attrs(attrs, handlrs)}${!is_sc(type) ? ' /' : ''}>`;
+  const open_tag = (type, attrs, handlrs) => `<${_.transform_key(type)}${str_attrs(attrs, handlrs)}${is_sc(type) ? ' /' : ''}>`;
 
   const close_tag = type => !is_sc(type) ? `</${_.transform_key(type)}>` : '';
 
@@ -217,8 +217,6 @@ var redda = (function () {
     if (node.childNodes.length && _.is_arr(first)) {
       return update_nodes(jsonml, node.childNodes, handlrs);
     }
-
-    //if (is_match(jsonml, node, handlrs)) return update_node(jsonml, node, handlrs)
 
     node.innerHTML = to_html(jsonml, handlrs, node);
   };
@@ -330,8 +328,8 @@ var redda = (function () {
   };
 
   const render_ = handlrs => (node, app) => {
-    // const shadow = node.attachShadow({ mode: 'open' })
-    const render = () => (handlrs.reset(), update_build_html([to_jsonml(app)], node, handlrs));
+    const shadow = node.attachShadow({ mode: 'open' });
+    const render = () => (handlrs.reset(), update_build_html([to_jsonml(app)], shadow, handlrs));
 
     render();
 

@@ -57,7 +57,7 @@ const is_sc = tag => sc_tags.includes(_.sym(tag))
 
 export const open_tag = (type, attrs, handlrs) =>
   `<${_.transform_key(type)}${str_attrs(attrs, handlrs)}${
-    !is_sc(type) ? ' /' : ''
+    is_sc(type) ? ' /' : ''
   }>`
 
 export const close_tag = type =>
@@ -115,8 +115,6 @@ export const update_build_html = (jsonml = [], node, handlrs) => {
   if (node.childNodes.length && _.is_arr(first)) {
     return update_nodes(jsonml, node.childNodes, handlrs)
   }
-
-  //if (is_match(jsonml, node, handlrs)) return update_node(jsonml, node, handlrs)
 
   node.innerHTML = to_html(jsonml, handlrs, node)
 }
@@ -243,9 +241,9 @@ const is_match = (elem, node) => {
 }
 
 const render_ = handlrs => (node, app) => {
-  // const shadow = node.attachShadow({ mode: 'open' })
+  const shadow = node.attachShadow({ mode: 'open' })
   const render = () => (
-    handlrs.reset(), update_build_html([to_jsonml(app)], node, handlrs)
+    handlrs.reset(), update_build_html([to_jsonml(app)], shadow, handlrs)
   )
 
   render()

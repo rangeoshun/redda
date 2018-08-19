@@ -119,7 +119,8 @@ export const update_build_html = (jsonml = [], node, handlrs) => {
   node.innerHTML = to_html(jsonml, handlrs, node)
 }
 
-const update_text_node = (text, node) => (node.data = text)
+const update_text_node = (text, node) =>
+  node.data !== text && (node.data = text)
 
 const update_node = (elem, node, handlrs) => {
   if (!elem || !node) return
@@ -164,12 +165,12 @@ const update_node = (elem, node, handlrs) => {
       }
 
       if (is_value(key)) {
-        node.removeAttribute(key)
-        node.value = val
+        val !== node.value && (node.removeAttribute(key), (node.value = val))
+
         return
       }
 
-      if (val) node.setAttribute(key, val)
+      if (val) node.getAttribute(val) && node.setAttribute(key, val)
       else node.removeAttribute(key)
     })
 
@@ -189,6 +190,14 @@ const update_node = (elem, node, handlrs) => {
   update_nodes([second, ...rest], node.childNodes, handlrs)
 }
 
+const buffer_node = document.createElement('div')
+
+const to_nodes = (jsonml, handlrs) => {
+  buffer_node.innerHTML = to_html(jsonml, handlrs)
+
+  return buffer_node.childNodes
+}
+
 const update_nodes = (
   [elem, ...rest_elems],
   [node, ...rest_nodes],
@@ -200,9 +209,10 @@ const update_nodes = (
     return
   }
 
-  if (!_.is_empty(rest_elems) && _.is_empty(rest_nodes)) {
-    node.parentNode.innerHTML += to_html(rest_elems, handlrs)
-    return
+  if (!_.is_empty(rest_elems) && _.is_empty(rest_nodes) && node) {
+    to_nodes(rest_elems, handlrs).forEach(new_node =>
+      node.parentNode.appendChild(new_node)
+    )
   }
 
   if (_.is_empty(rest_elems) && !_.is_empty(rest_nodes)) {

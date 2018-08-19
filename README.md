@@ -228,6 +228,7 @@ $ open examples/counter/index.html
 
 - [x] State management
 - [x] Event handling
+- [x] Reuse existing DOM
 - [ ] Meaningful error messages
 - [ ] Add more tests
 - [ ] Other goodies

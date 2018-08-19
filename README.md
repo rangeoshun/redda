@@ -184,6 +184,8 @@ Now, after `state.disp(set_value, 3)` our app will rerender and look like this:
 
 All modern apps need event handling. While you could render the site, and attach event listeners yourself, it is included in Redda. For this it utilizes the standard HTML event listener attributes like `onclick`. `mousedown`, etc. You just need to include these in your `attrs` object.
 
+Note: all attributes starting matching the regexp `/^on/` will be treated as en event handler.
+
 ```javascript
 const { button } = redda.dom
 const element = () => [button, { onclick: (ev) => console.log(ev) }, 'CLICK ME']

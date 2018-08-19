@@ -184,6 +184,8 @@ Now, after `state.disp(set_value, 3)` our app will rerender and look like this:
 
 All modern apps need event handling. While you could render the site, and attach event listeners yourself, it is included in Redda. For this it utilizes the standard HTML event listener attributes like `onclick`. `mousedown`, etc. You just need to include these in your `attrs` object.
 
+Note: all attributes starting matching the regexp `/^on/` will be treated as en event handler.
+
 ```javascript
 const { button } = redda.dom
 const element = () => [button, { onclick: (ev) => console.log(ev) }, 'CLICK ME']
@@ -198,6 +200,12 @@ This will result in the following HTML:
 ```
 
 As seen, Redda registered the event listener for you, and will pass the event object. You can access everithing in that specific clojure, which will enable you to manipulate state.
+
+#### Second render
+
+First Redda will use `innerHTML` of the node to inject the stringified HTML created by the JSONML you passed. On the second render though, it will try to reuse the existing DOM structure. While it could be still optimized further, this will allow a as seemless of an update as possible.
+
+On the second render event handlers wont't be registered and assigned in an attribute, but will be assigned through the element's property, like `node.onclick = () => null` for example.
 
 ## Examples
 
@@ -224,10 +232,19 @@ A more advanced demo, demonstrating the event handling through a counter which y
 $ open examples/counter/index.html
 ```
 
+### TODO demo
+
+An even more advanced demo displaying possibilities with Redda.
+
+```shell
+$ open examples/todo/index.html
+```
+
 ## To come
 
 - [x] State management
 - [x] Event handling
+- [x] Reuse existing DOM
 - [ ] Meaningful error messages
 - [ ] Add more tests
 - [ ] Other goodies

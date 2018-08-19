@@ -214,8 +214,6 @@ var redda = (function () {
   const update_build_html = (jsonml = [], node, handlrs) => {
     let [first, second, ...rest] = jsonml;
 
-    console.log('update_build_html', jsonml);
-
     if (node.childNodes.length && _.is_arr(first)) {
       return update_nodes(jsonml, node.childNodes, handlrs);
     }
@@ -225,10 +223,17 @@ var redda = (function () {
     node.innerHTML = to_html(jsonml, handlrs, node);
   };
 
-  const update_text_node = (text, node) => node.textValue = text;
+  const update_text_node = (text, node) => node.data = text;
 
   const update_node = (elem, node, handlrs) => {
+    if (!elem || !node) return;
+
     const [first, second, ...rest] = elem;
+
+    if (is_text(node)) {
+      update_text_node(elem, node);
+      return;
+    }
 
     if (_.is_obj(second)) {
       const attrs = node.attributes;
@@ -273,39 +278,59 @@ var redda = (function () {
 
       const child_nodes = node.childNodes;
 
-      if (rest.length && !child_nodes.length) {
+      if (!_.is_empty(rest) && _.is_empty(child_nodes)) {
         update_build_html(rest, node, handlrs);
         return;
       }
 
-      update_nodes(rest, node.childNodes, handlrs);
+      update_nodes(rest, child_nodes, handlrs);
       return;
     }
 
     if (!second) return;
 
     update_nodes([second, ...rest], node.childNodes, handlrs);
-
-    //update_build_html([second, ...rest], node, handlrs)
   };
 
   const update_nodes = ([elem, ...rest_elems], [node, ...rest_nodes], handlrs) => {
-    if (!elem) return;
+    if (node && !is_match(elem, node)) {
+      node.parentNode.removeChild(node);
+      update_nodes([elem, ...rest_elems], rest_nodes, handlrs);
+      return;
+    }
 
-    if (is_text(node)) update_text_node(elem, node);else update_node(elem, node, handlrs);
-
-    if (rest_elems.length && !rest_nodes.length) {
+    if (!_.is_empty(rest_elems) && _.is_empty(rest_nodes)) {
       node.parentNode.innerHTML += to_html(rest_elems, handlrs);
       return;
     }
+
+    if (_.is_empty(rest_elems) && !_.is_empty(rest_nodes)) {
+      rest_nodes.forEach(node => node.parentNode.removeChild(node));
+      return;
+    }
+
+    update_node(elem, node, handlrs);
+
+    if (_.is_empty(rest_elems)) return;
 
     update_nodes(rest_elems, rest_nodes, handlrs);
   };
 
   const is_text = node => node && node.nodeName === '#text';
 
+  const is_match = (elem, node) => {
+    if (!node || !elem) return false;
+
+    if (_.is_str(elem) && is_text(node)) return true;
+
+    const [first_, second, ...rest] = elem;
+    const first = _.is_sym(first_) ? _.sym_to_str(first_) : first_;
+
+    return first == node.localName;
+  };
+
   const render_ = handlrs => (node, app) => {
-    //  const shadow = node.attachShadow({ mode: 'open' })
+    // const shadow = node.attachShadow({ mode: 'open' })
     const render = () => (handlrs.reset(), update_build_html([to_jsonml(app)], node, handlrs));
 
     render();

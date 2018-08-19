@@ -49,7 +49,12 @@
                  || item))
          })
 
-         state.add(todos, add_todo, toggle_todo)
+         const remove_todo = ({ list }, id) => ({
+             list: list.filter((item) => (
+                 item.id !== id))
+         })
+
+         state.add(todos, add_todo, toggle_todo, remove_todo)
 
          const todo_list = state.conn(
              ({ todos: { list } }) => (
@@ -64,47 +69,50 @@
                              : null
                        },
                        [button,
-                        {onclick: () => state.disp(toggle_todo, id) },
-                        (done ? "UNDONE" : 'DONE')],
-                       note
-                      ], [hr]
-                  ]))]
-         ),
-               todos
-         )
-
-         const add_todo_button = state.conn(
-             ({ todo_form }) => (
-                 [button,
-                  {disabled: todo_form.length ? null : 'disabled',
-                   onclick: () => (
-                      !!todo_form &&
-                      (state.disp(add_todo, todo_form),
-                       state.disp(update_form, ''))
-                  )},
-                  'ADD TODO']
+                        {onclick: () => state.disp(remove_todo, id) },
+                        "REMOVE"],
+                        [button,
+                         {onclick: () => state.disp(toggle_todo, id) },
+                         (done ? "UNDONE" : 'DONE')],
+                        note
+                       ], [hr]
+                      ]))]
              ),
-             todo_form,
              todos
          )
 
-         const app = () => (
-             [div,
-              {id: 'todos'},
-              [h1, "REDDA TODO"],
-              [br],
-              [todo_input],
-              [add_todo_button],
-              [hr],
-              [todo_list]]
-         )
+                     const add_todo_button = state.conn(
+                         ({ todo_form }) => (
+                             [button,
+                              {disabled: todo_form.length ? null : 'disabled',
+                               onclick: () => (
+                                   !!todo_form &&
+                                   (state.disp(add_todo, todo_form),
+                                    state.disp(update_form, ''))
+                               )},
+                              'ADD TODO']
+                         ),
+                         todo_form,
+                         todos
+                     )
 
-         const render_app = redda.render(
-             document.getElementById('app-cont'),
-             [app]
-         )
+                     const app = () => (
+                         [div,
+                          {id: 'todos'},
+                          [h1, "REDDA TODO"],
+                          [br],
+                          [todo_input],
+                          [add_todo_button],
+                          [hr],
+                          [todo_list]]
+                     )
 
-         state.on_change(render_app)
+                     const render_app = redda.render(
+                         document.getElementById('app-cont'),
+                         [app]
+                     )
+
+                     state.on_change(render_app)
         </script>
     </body>
 </html>

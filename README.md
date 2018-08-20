@@ -191,7 +191,7 @@ All modern apps need event handling. While you could render the site, and attach
 ```javascript
 const { button } = redda.dom
 const element = () => [button, { onclick: (ev) => console.log(ev) }, 'CLICK ME']
-  
+
 redda.render(document.getElementById('app-cont'), [element])
 ```
 
@@ -242,7 +242,7 @@ An even more advanced demo displaying possibilities with Redda. It implements a 
 $ open examples/todo/index.html
 ```
 
-![Alt text](/examples/todo/screenshot.png?raw=true "Screenshot of TODOs demo")
+![Screenshot of TODOs demo](https://github.com/rangeoshun/redda/raw/master/examples/todo/screenshot.png "Screenshot of TODOs demo")
 
 ## To come
 

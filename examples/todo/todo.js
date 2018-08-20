@@ -32,7 +32,17 @@ const todo_input = state.conn(
   todo_form
 )
 
-const todos = () => ({ list: [] })
+const todos = () => ({
+  list: [
+    { id: rnd_id(), note: 'State management', done: true },
+    { id: rnd_id(), note: 'Event handling', done: true },
+    { id: rnd_id(), note: 'Reuse existing DOM', done: true },
+    { id: rnd_id(), note: 'Meaningful error messages', done: false },
+    { id: rnd_id(), note: 'Add more tests', done: false },
+    { id: rnd_id(), note: 'Other goodies', done: false }
+  ]
+})
+
 const add_todo = ({ list }, new_todo) => ({
   list: [
     ...list,
@@ -62,8 +72,9 @@ const todo_list = state.conn(
     { id: 'todo_list', class: 'collection' },
     ...reduc(list, [], (acc, { id, note, done }) => [
       ...acc,
+
       [
-        li,
+        console.log(id, note, done) || li,
         {
           id,
           class: 'collection-item',

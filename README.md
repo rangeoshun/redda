@@ -143,7 +143,9 @@ state.get() // => { "fragment": { "value": 1 } }
 
 #### Connecting elements with state
 
-This is where we make use of our state. We take a simple element as described above and connect it to our state. Still following the example we used. Please note that the signature of the element with state changes, as the first argument is the state, followed by the attributes and content.
+This is where we make use of our state. We take a simple element as described above and connect it to our state. Still following the example we used.
+
+> **Note** that the signature of the element with state changes, as the first argument is the state, followed by the attributes and content.
 
 ```javascript
 const { h1 } = redda.dom
@@ -184,7 +186,7 @@ Now, after `state.disp(set_value, 3)` our app will rerender and look like this:
 
 All modern apps need event handling. While you could render the site, and attach event listeners yourself, it is included in Redda. For this it utilizes the standard HTML event listener attributes like `onclick`. `mousedown`, etc. You just need to include these in your `attrs` object.
 
-Note: all attributes starting matching the regexp `/^on/` will be treated as en event handler.
+> **Note** that all attributes starting matching the regexp `/^on/` will be treated as en event handler.
 
 ```javascript
 const { button } = redda.dom
@@ -232,13 +234,15 @@ A more advanced demo, demonstrating the event handling through a counter which y
 $ open examples/counter/index.html
 ```
 
-### TODO demo
+### TODOs demo
 
-An even more advanced demo displaying possibilities with Redda.
+An even more advanced demo displaying possibilities with Redda. It implements a todo app using [materialize](https://materializecss.com/).
 
 ```shell
 $ open examples/todo/index.html
 ```
+
+![Alt text](/examples/todo/screenshot.png?raw=true "Screenshot of TODOs demo")
 
 ## To come
 

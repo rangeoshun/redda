@@ -17,13 +17,7 @@ const todo_input = state.conn(
         id: 'what_to_do',
         type: 'text',
         onkeydown: ev =>
-          // ev.preventDefault(),
-          setTimeout(
-            () => (
-              state.disp(update_form, ev.target.value || ''),
-              M.updateTextFields()
-            )
-          ),
+          setTimeout(() => state.disp(update_form, ev.target.value || '')),
         value: todo_form
       }
     ],
@@ -69,12 +63,12 @@ state.add(todos, add_todo, toggle_todo, remove_todo)
 const todo_list = state.conn(
   ({ todos: { list } }) => [
     ul,
-    { id: 'todo_list', class: 'collection' },
+    { id: 'todo_list', class: `collection z-depth-${list.length ? 2 : 0}` },
     ...reduc(list, [], (acc, { id, note, done }) => [
       ...acc,
 
       [
-        console.log(id, note, done) || li,
+        li,
         {
           id,
           class: 'collection-item',
@@ -161,4 +155,4 @@ const app = () => [
 const app_cont = document.getElementById('app-cont')
 const render_app = redda.render(app_cont, [app])
 
-state.on_change(render_app)
+state.on_change(() => (render_app(), M.updateTextFields()))

@@ -1,4 +1,4 @@
-const { div, br, hr, h1, input, button } = redda.dom
+const { div, br, hr, h1, input, button, label, span, i, ul, li } = redda.dom
 const { rnd_id, reduc } = redda.utils
 const state = redda.state()
 
@@ -9,15 +9,25 @@ state.add(todo_form, update_form)
 
 const todo_input = state.conn(
   ({ todo_form }) => [
-    input,
-    {
-      type: 'text',
-      onkeypress: ev => (
-        ev.preventDefault(),
-        state.disp(update_form, (ev.target.value || '') + ev.key)
-      ),
-      value: todo_form
-    }
+    div,
+    { class: 'input-field col s10 inline' },
+    [
+      input,
+      {
+        id: 'what_to_do',
+        type: 'text',
+        onkeydown: ev =>
+          // ev.preventDefault(),
+          setTimeout(
+            () => (
+              state.disp(update_form, ev.target.value || ''),
+              M.updateTextFields()
+            )
+          ),
+        value: todo_form
+      }
+    ],
+    [label, { for: 'what_to_do' }, 'What to do?']
   ],
   todo_form
 )
@@ -48,27 +58,45 @@ state.add(todos, add_todo, toggle_todo, remove_todo)
 
 const todo_list = state.conn(
   ({ todos: { list } }) => [
-    div,
-    { id: 'todo_list' },
+    ul,
+    { id: 'todo_list', class: 'collection' },
     ...reduc(list, [], (acc, { id, note, done }) => [
       ...acc,
       [
-        div,
+        li,
         {
           id,
+          class: 'collection-item',
           style: done
             ? { 'text-decoration': 'line-through', 'font-style': 'italic' }
             : null
         },
-        [button, { onclick: () => state.disp(remove_todo, id) }, 'REMOVE'],
         [
           button,
-          { onclick: () => state.disp(toggle_todo, id) },
-          done ? 'UNDONE' : 'DONE'
+          {
+            class: 'waves-effect waves-teal btn-flat',
+            onclick: () => state.disp(remove_todo, id)
+          },
+          [i, { class: 'material-icons left' }, 'delete']
         ],
-        note
-      ],
-      [hr]
+        [
+          div,
+          { class: 'secondary-content', style: { 'margin-top': '0.4em' } },
+          [
+            label,
+            [
+              input,
+              {
+                onclick: () => state.disp(toggle_todo, id),
+                type: 'checkbox',
+                checked: done ? 'checked' : null
+              }
+            ],
+            [span, 'Done']
+          ]
+        ],
+        [span, note]
+      ]
     ])
   ],
   todos
@@ -78,7 +106,8 @@ const add_todo_button = state.conn(
   ({ todo_form }) => [
     button,
     {
-      disabled: todo_form.length ? null : 'disabled',
+      class: 'waves-effect waves-light btn-large col s2',
+      disabled: !!todo_form ? null : 'disabled',
       onclick: () =>
         !!todo_form &&
         (state.disp(add_todo, todo_form), state.disp(update_form, ''))
@@ -91,15 +120,23 @@ const add_todo_button = state.conn(
 
 const app = () => [
   div,
-  { id: 'todos' },
-  [h1, 'REDDA TODO'],
-  [br],
-  [todo_input],
-  [add_todo_button],
-  [hr],
-  [todo_list]
+  { id: 'todos', class: 'container' },
+  [
+    div,
+    { class: 'row' },
+    [div, { class: 'col l2' }],
+    [
+      div,
+      { class: 'col l8 m12' },
+      [h1, 'REDDA TODO'],
+      [div, { class: 'row' }, [todo_input], [add_todo_button]],
+      [todo_list]
+    ],
+    [div, { class: 'col l2' }]
+  ]
 ]
 
-const render_app = redda.render(document.getElementById('app-cont'), [app])
+const app_cont = document.getElementById('app-cont')
+const render_app = redda.render(app_cont, [app])
 
 state.on_change(render_app)

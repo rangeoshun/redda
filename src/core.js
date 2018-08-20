@@ -168,7 +168,6 @@ const update_node = (elem, node, handlrs) => {
 
       if (is_value(key)) {
         val !== node.value && (node.removeAttribute(key), (node.value = val))
-
         return
       }
 
@@ -217,12 +216,11 @@ const update_nodes = (
     )
   }
 
+  update_node(elem, node, handlrs)
+
   if (_.is_empty(rest_elems) && !_.is_empty(rest_nodes)) {
     rest_nodes.forEach(node => node.parentNode.removeChild(node))
-    return
   }
-
-  update_node(elem, node, handlrs)
 
   if (_.is_empty(rest_elems)) return
 
@@ -249,7 +247,7 @@ const is_match = (elem, node) => {
   const [first_, second, ...rest] = elem
   const first = _.is_sym(first_) ? _.sym_to_str(first_) : first_
 
-  return first == node.localName
+  return first === node.localName
 }
 
 const render_ = handlrs => (node, app) => {

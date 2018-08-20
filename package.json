@@ -1,7 +1,12 @@
 {
   "name": "redda",
-  "keywords": ["jsonml", "html", "render", "engine"],
-  "version": "1.3.5",
+  "keywords": [
+    "jsonml",
+    "html",
+    "render",
+    "engine"
+  ],
+  "version": "1.3.6",
   "licence": "MIT",
   "author": {
     "name": "range",

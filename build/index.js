@@ -269,7 +269,6 @@ var redda = (function () {
 
         if (is_value(key)) {
           val !== node.value && (node.removeAttribute(key), node.value = val);
-
           return;
         }
 
@@ -311,12 +310,11 @@ var redda = (function () {
       to_nodes(rest_elems, handlrs).forEach(new_node => node.parentNode.appendChild(new_node));
     }
 
+    update_node(elem, node, handlrs);
+
     if (_.is_empty(rest_elems) && !_.is_empty(rest_nodes)) {
       rest_nodes.forEach(node => node.parentNode.removeChild(node));
-      return;
     }
-
-    update_node(elem, node, handlrs);
 
     if (_.is_empty(rest_elems)) return;
 
@@ -333,7 +331,7 @@ var redda = (function () {
     const [first_, second, ...rest] = elem;
     const first = _.is_sym(first_) ? _.sym_to_str(first_) : first_;
 
-    return first == node.localName;
+    return first === node.localName;
   };
 
   const render_ = handlrs => (node, app) => {
@@ -404,7 +402,7 @@ var redda = (function () {
     return {
       add: (init_frag, ...reducrs) => set$$1(add$1(get$$1(), init_frag, ...reducrs)),
       conn: (elem, ...frags) => conn(get$$1, elem, ...frags),
-      disp: (reducr, ...args) => (set$$1(disp(get$$1(), reducr, ...args)), call_on_change(get$$1()[on_change_sym])),
+      disp: (reducr, ...args) => (set$$1(disp(get$$1(), reducr, ...args)), setTimeout(call_on_change(get$$1()[on_change_sym]))),
       on_change: fn => set$$1(_extends({}, get$$1(), { [on_change_sym]: [...get$$1()[on_change_sym], fn] })),
 
       get: () => get_state(get$$1())

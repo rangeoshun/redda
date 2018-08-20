@@ -162,6 +162,8 @@ var redda = (function () {
 
       if (is_handl(trans_key)) return conc + reg_handlr(handlrs, val);
 
+      if (_.is_null(val)) return acc;
+
       return conc + `"${_.is_str(val) ? val : _.str(val)}"`;
     });
   };

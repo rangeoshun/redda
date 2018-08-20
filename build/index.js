@@ -271,7 +271,7 @@ var redda = (function () {
           return;
         }
 
-        if (val) node.getAttribute(val) && node.setAttribute(key, val);else node.removeAttribute(key);
+        if (val) node.setAttribute(key, val);else node.removeAttribute(key);
       });
 
       const child_nodes = node.childNodes;
@@ -335,8 +335,8 @@ var redda = (function () {
   };
 
   const render_ = handlrs => (node, app) => {
-    const shadow = node.attachShadow({ mode: 'open' });
-    const render = () => (handlrs.reset(), update_build_html([to_jsonml(app)], shadow, handlrs));
+    //  const shadow = node.attachShadow({ mode: 'open' })
+    const render = () => (handlrs.reset(), update_build_html([to_jsonml(app)], node, handlrs));
 
     render();
 

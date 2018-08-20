@@ -170,7 +170,7 @@ const update_node = (elem, node, handlrs) => {
         return
       }
 
-      if (val) node.getAttribute(val) && node.setAttribute(key, val)
+      if (val) node.setAttribute(key, val)
       else node.removeAttribute(key)
     })
 
@@ -251,9 +251,9 @@ const is_match = (elem, node) => {
 }
 
 const render_ = handlrs => (node, app) => {
-  const shadow = node.attachShadow({ mode: 'open' })
+  //  const shadow = node.attachShadow({ mode: 'open' })
   const render = () => (
-    handlrs.reset(), update_build_html([to_jsonml(app)], shadow, handlrs)
+    handlrs.reset(), update_build_html([to_jsonml(app)], node, handlrs)
   )
 
   render()

@@ -73,7 +73,8 @@ const state = state_ => {
     add: (init_frag, ...reducrs) => set(add(get(), init_frag, ...reducrs)),
     conn: (elem, ...frags) => conn(get, elem, ...frags),
     disp: (reducr, ...args) => (
-      set(disp(get(), reducr, ...args)), call_on_change(get()[on_change_sym])
+      set(disp(get(), reducr, ...args)),
+      setTimeout(call_on_change(get()[on_change_sym]))
     ),
     on_change: fn =>
       set({ ...get(), [on_change_sym]: [...get()[on_change_sym], fn] }),

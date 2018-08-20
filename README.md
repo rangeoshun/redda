@@ -1,9 +1,29 @@
 # Redda
 A functional approach to a JSONML based UI
 
+## Installation
+
+You can just use the npm package.
+
+```shell
+npm i redda
+```
+
+Or download this repo and include `build/index.js` in your app.
+
 ## Description
 
 The goal of the project is to create a UI framework that reads data and produces HTML. The basis is to use [JSONML](http://www.jsonml.org/) and augment it with the ability to use functions or symbols as `tag-name`.
+
+If you're using the `npm` package, go on and require Redda.
+
+```javascript
+const redda = require('redda')
+
+// or import if using babel or something
+
+import redda from 'redda'
+```
 
 ### Elements
 

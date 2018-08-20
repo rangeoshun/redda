@@ -144,7 +144,7 @@ const app = () => [
     [
       div,
       { class: 'col l8 m12' },
-      [h1, 'REDDA TODO'],
+      [h1, 'REDDA TODOs'],
       [div, { class: 'row' }, [todo_input], [add_todo_button]],
       [todo_list]
     ],

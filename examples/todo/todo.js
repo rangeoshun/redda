@@ -75,9 +75,20 @@ const todo_list = state.conn(
           button,
           {
             class: 'waves-effect waves-teal btn-flat',
-            onclick: () => state.disp(remove_todo, id)
+            onclick: () => state.disp(remove_todo, id),
+            style: {
+              padding: '0 9px',
+              'margin-right': '5px',
+              'border-radius': '50%'
+            }
           },
-          [i, { class: 'material-icons left' }, 'delete']
+          [
+            i,
+            {
+              class: 'material-icons center'
+            },
+            'delete'
+          ]
         ],
         [
           div,

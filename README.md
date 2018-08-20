@@ -1,6 +1,8 @@
 # Redda
 A functional approach to a JSONML based UI
 
+You can check out the [LIVE demo](https://redda-todo.github.io/).
+
 ## Installation
 
 You can just use the npm package.
@@ -257,6 +259,8 @@ $ open examples/counter/index.html
 ### TODOs demo
 
 An even more advanced demo displaying possibilities with Redda. It implements a todo app using [materialize](https://materializecss.com/).
+
+You can check out the [LIVE demo](https://redda-todo.github.io/).
 
 ```shell
 $ open examples/todo/index.html

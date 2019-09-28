@@ -1,5 +1,8 @@
-var redda = (function () {
-  'use strict';
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global.redda = factory());
+}(this, (function () { 'use strict';
 
   const undef = undefined;
 
@@ -447,5 +450,5 @@ var redda = (function () {
 
   return index;
 
-}());
+})));
 //# sourceMappingURL=index.js.map

@@ -220,10 +220,12 @@ redda.render(document.getElementById('app-cont'), [element])
 This will result in the following HTML:
 
 ```html
-<button onclick="redda.handlrs.get()['05a1a4e89fb04'](event)">CLICK ME</button>
+<button onclick-key="06226f8930feec">CLICK ME</button>
 ```
 
-As seen, Redda registered the event listener for you, and will pass the event object. You can access everithing in that specific clojure, which will enable you to manipulate state.
+Redda handles event listeners in a single store. This is to achieve listener
+detaching before each render, to ensure the reuse of an element will not result
+in multiple or unwanted listeners attached.
 
 #### Second render
 

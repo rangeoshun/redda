@@ -51,7 +51,7 @@ const disp = (state, reducr, ...args) => {
   }))
 }
 
-const call_on_change = cbs => _.reduc(cbs, null, (_, cb) => cb())
+const call_on_change = cbs => () => _.reduc(cbs, null, (_, cb) => cb())
 
 const get_state = state =>
   _.reduc(_.syms_of(state), {}, (acc, key) => {

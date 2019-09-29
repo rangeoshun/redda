@@ -1,15 +1,31 @@
 'use strict'
 
-import { rnd_id, keys_of, reduc } from './utils'
+import { rnd_id, keys_of, reduc, repl, split } from './utils'
 
-const reg = (store, handlr) => {
+const reg = (store, handlr, handlr_key) => {
   const handlr_id = rnd_id()
 
   const new_store = {
     ...store,
-    [handlr_id]: handlr
+    [handlr_key + '-' + handlr_id]: handlr
   }
   return [handlr_id, new_store]
+}
+
+const key = val => val + '-key'
+
+const detach = (event, handlr_id, handlr) => {
+  const node = document.querySelector(`[${key(event)}="${handlr_id}"]`)
+  const ev_name = repl(event, /^on/, '')
+
+  return node.removeEventListener(ev_name, handlr)
+}
+
+const attach = (event, handlr_id, handlr) => {
+  const node = document.querySelector(`[${key(event)}="${handlr_id}"]`)
+  const ev_name = repl(event, /^on/, '')
+
+  return node.addEventListener(ev_name, handlr)
 }
 
 const handlrs = store_ => {
@@ -18,8 +34,23 @@ const handlrs = store_ => {
   return {
     get: () => store_,
     reset: () => (store_ = {}),
-    reg: handlr => {
-      const [handlr_id, new_store] = reg(store_, handlr)
+    key: val => key(val),
+    detach: () =>
+      reduc(keys_of(store_), null, (_, key) => {
+        const [handlr_key, handlr_id] = split(key, '-')
+        const handlr = store_[key]
+
+        detach(handlr_key, handlr_id, handlr)
+      }),
+    attach: () =>
+      reduc(keys_of(store_), null, (_, key) => {
+        const [handlr_key, handlr_id] = split(key, '-')
+        const handlr = store_[key]
+
+        attach(handlr_key, handlr_id, handlr)
+      }),
+    reg: (event, handlr) => {
+      const [handlr_id, new_store] = reg(store_, handlr, event)
       store_ = new_store
 
       return handlr_id

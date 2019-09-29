@@ -25,21 +25,21 @@ const is_style = key => key === 'style'
 const is_value = key => key === 'value'
 const is_handl = key => key.match(/^on/)
 
-const reg_handlr = (handlrs, val) =>
-  `"redda.handlrs.get()['${handlrs.reg(val)}'](event)"`
-
 export const str_attrs = (attrs, handlrs) => {
   if (!_.is_obj(attrs)) return ''
 
   return _.reduc(_.keys_of(attrs), '', (acc, key) => {
-    const trans_key = _.transform_key(_.str(key))
+    const trans_key_ = _.transform_key(_.str(key))
+    const trans_key = is_handl(trans_key_)
+      ? handlrs.key(trans_key_)
+      : trans_key_
     const conc = `${acc} ${trans_key}=`
 
     const val = _.get(attrs, key)
 
     if (is_style(trans_key)) return conc + `"${str_style(val)}"`
 
-    if (is_handl(trans_key)) return conc + reg_handlr(handlrs, val)
+    if (is_handl(trans_key)) return conc + `"${handlrs.reg(trans_key_, val)}"`
 
     if (_.is_null(val)) return acc
 
@@ -139,7 +139,7 @@ const update_node = (elem, node, handlrs) => {
     const elem_keys = _.keys_of(second)
 
     _.reduc(_.keys_of(attrs), null, (__, index) => {
-      const attr = attrs[index].name
+      const attr = attrs[index] && attrs[index].name
 
       if (!attr || _.is_def(second[attr])) return
 
@@ -161,8 +161,7 @@ const update_node = (elem, node, handlrs) => {
       }
 
       if (is_handl(key)) {
-        node.removeAttribute(key)
-        node[key] = val
+        node.setAttribute(handlrs.key(key), handlrs.reg(key, val))
         return
       }
 
@@ -253,7 +252,10 @@ const is_match = (elem, node) => {
 const render_ = handlrs => (node, app) => {
   //  const shadow = node.attachShadow({ mode: 'open' })
   const render = () => (
-    handlrs.reset(), update_build_html([to_jsonml(app)], node, handlrs)
+    handlrs.detach(),
+    handlrs.reset(),
+    update_build_html([to_jsonml(app)], node, handlrs),
+    handlrs.attach()
   )
 
   render()

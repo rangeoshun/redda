@@ -19,7 +19,8 @@ test('#str_style', () => (
 
 const mock_handlr = () => null
 const mock_handlrs = {
-  reg: fn => (expect(fn).toBe(mock_handlr), 'foo')
+  reg: (ev, fn) => (expect(fn).toBe(mock_handlr), 'foo'),
+  key: val => val + '-key'
 }
 
 test('#str_attrs', () => (
@@ -31,7 +32,7 @@ test('#str_attrs', () => (
     str_attrs({ foo: { bar: 'bar' }, style: { FOO: 1, bar_baz: 'bar' } })
   ).toBe(' foo="{"bar":"bar"}" style="foo: 1; bar-baz: bar;"'),
   expect(str_attrs({ onclick: mock_handlr }, mock_handlrs)).toBe(
-    ' onclick="redda.handlrs.get()[\'foo\'](event)"'
+    ' onclick-key="foo"'
   )
 ))
 
@@ -110,7 +111,7 @@ test('#to_html', () => (
     `<div id="app" style="display: flex;"><div id="head" style="height: 50px; flex-shrink: 0;">Title</div><div id="body">Nice app</div></div>`
   ),
   expect(to_html(['div', { onclick: mock_handlr }], mock_handlrs)).toEqual(
-    `<div onclick="redda.handlrs.get()['foo'](event)"></div>`
+    `<div onclick-key="foo"></div>`
   )
 ))
 

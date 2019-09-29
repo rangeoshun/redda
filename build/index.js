@@ -150,20 +150,19 @@
   const is_value = key => key === 'value';
   const is_handl = key => key.match(/^on/);
 
-  const reg_handlr = (handlrs, val) => `"redda.handlrs.get()['${handlrs.reg(val)}'](event)"`;
-
   const str_attrs = (attrs, handlrs) => {
     if (!_.is_obj(attrs)) return '';
 
     return _.reduc(_.keys_of(attrs), '', (acc, key) => {
-      const trans_key = _.transform_key(_.str(key));
+      const trans_key_ = _.transform_key(_.str(key));
+      const trans_key = is_handl(trans_key_) ? handlrs.key(trans_key_) : trans_key_;
       const conc = `${acc} ${trans_key}=`;
 
       const val = _.get(attrs, key);
 
       if (is_style(trans_key)) return conc + `"${str_style(val)}"`;
 
-      if (is_handl(trans_key)) return conc + reg_handlr(handlrs, val);
+      if (is_handl(trans_key)) return conc + `"${handlrs.reg(trans_key_, val)}"`;
 
       if (_.is_null(val)) return acc;
 
@@ -243,7 +242,7 @@
       const elem_keys = _.keys_of(second);
 
       _.reduc(_.keys_of(attrs), null, (__, index) => {
-        const attr = attrs[index].name;
+        const attr = attrs[index] && attrs[index].name;
 
         if (!attr || _.is_def(second[attr])) return;
 
@@ -265,8 +264,7 @@
         }
 
         if (is_handl(key)) {
-          node.removeAttribute(key);
-          node[key] = val;
+          node.setAttribute(handlrs.key(key), handlrs.reg(key, val));
           return;
         }
 
@@ -339,7 +337,7 @@
 
   const render_ = handlrs => (node, app) => {
     //  const shadow = node.attachShadow({ mode: 'open' })
-    const render = () => (handlrs.reset(), update_build_html([to_jsonml(app)], node, handlrs));
+    const render = () => (handlrs.detach(), handlrs.reset(), update_build_html([to_jsonml(app)], node, handlrs), handlrs.attach());
 
     render();
 
@@ -412,13 +410,29 @@
     };
   };
 
-  const reg = (store, handlr) => {
+  const reg = (store, handlr, handlr_key) => {
     const handlr_id = rnd_id();
 
     const new_store = _extends({}, store, {
-      [handlr_id]: handlr
+      [handlr_key + '-' + handlr_id]: handlr
     });
     return [handlr_id, new_store];
+  };
+
+  const key = val => val + '-key';
+
+  const detach = (event, handlr_id, handlr) => {
+    const node = document.querySelector(`[${key(event)}="${handlr_id}"]`);
+    const ev_name = repl(event, /^on/, '');
+
+    return node.removeEventListener(ev_name, handlr);
+  };
+
+  const attach = (event, handlr_id, handlr) => {
+    const node = document.querySelector(`[${key(event)}="${handlr_id}"]`);
+    const ev_name = repl(event, /^on/, '');
+
+    return node.addEventListener(ev_name, handlr);
   };
 
   const handlrs = store_ => {
@@ -427,8 +441,21 @@
     return {
       get: () => store_,
       reset: () => store_ = {},
-      reg: handlr => {
-        const [handlr_id, new_store] = reg(store_, handlr);
+      key: val => key(val),
+      detach: () => reduc(keys_of(store_), null, (_$$1, key) => {
+        const [handlr_key, handlr_id] = split(key, '-');
+        const handlr = store_[key];
+
+        detach(handlr_key, handlr_id, handlr);
+      }),
+      attach: () => reduc(keys_of(store_), null, (_$$1, key) => {
+        const [handlr_key, handlr_id] = split(key, '-');
+        const handlr = store_[key];
+
+        attach(handlr_key, handlr_id, handlr);
+      }),
+      reg: (event, handlr) => {
+        const [handlr_id, new_store] = reg(store_, handlr, event);
         store_ = new_store;
 
         return handlr_id;

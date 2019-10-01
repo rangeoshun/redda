@@ -15,7 +15,6 @@ export default {
     }
   ],
   watch: {
-    chokidar: true,
     exclude: ['node_modules/**']
   },
   plugins: [

@@ -1,12 +1,12 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global.redda = factory());
-}(this, (function () { 'use strict';
+  (global = global || self, global.redda = factory());
+}(this, function () { 'use strict';
 
   const undef = undefined;
 
-  var undef$1 = {
+  var consts = {
     undef
   };
 
@@ -79,7 +79,7 @@
     return (rnd * rnd + rnd).toString(16).replace('.', '');
   };
 
-  var _ = {
+  var utils = {
     noop,
     add,
     str,
@@ -130,7 +130,7 @@
 
   const tags = ['a', 'abbr', 'acronym', 'address', 'applet', 'area', 'article', 'aside', 'audio', 'b', 'base', 'basefont', 'bdi', 'bdo', 'bgsound', 'big', 'blink', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'command', 'content', 'data', 'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'dir', 'div', 'dl', 'dt', 'element', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'font', 'footer', 'form', 'frame', 'frameset', 'h1', 'h2', 'h3', 'h4', 'h5', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'iframe', 'image', 'img', 'input', 'ins', 'isindex', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'listing', 'main', 'map', 'mark', 'marquee', 'menu', 'menuitem', 'meta', 'meter', 'multicol', 'nav', 'nextid', 'nobr', 'noembed', 'noframes', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'picture', 'plaintext', 'pre', 'progress', 'q', 'rp', 'rt', 'rtc', 'ruby', 's', 'samp', 'script', 'section', 'select', 'shadow', 'slot', 'small', 'source', 'spacer', 'span', 'strike', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'tt', 'u', 'ul', 'var', 'video', 'wbr', 'xmp'];
 
-  const syms = _.reduc(tags, {}, (acc, tag) => _extends({}, acc, {
+  const syms = utils.reduc(tags, {}, (acc, tag) => _extends({}, acc, {
     [tag]: Symbol.for(tag)
   }));
 
@@ -138,12 +138,12 @@
 
   const sc_tags = [syms.area, syms.base, syms.br, syms.col, syms.command, syms.embed, syms.hr, syms.img, syms.input, syms.keygen, syms.link, syms.menuitem, syms.meta, syms.param, syms.source, syms.track, syms.wbr];
 
-  const str_style_attr = val => !_.is_str(val) && val || _.str(`${val}`);
+  const str_style_attr = val => !utils.is_str(val) && val || utils.str(`${val}`);
 
   const str_style = attrs => {
-    if (!_.is_obj(attrs)) return '';
+    if (!utils.is_obj(attrs)) return '';
 
-    return _.trim(_.reduc(_.keys_of(attrs), '', (acc, key) => `${acc} ${_.transform_key(_.str(key))}: ${str_style_attr(_.get(attrs, key))};`));
+    return utils.trim(utils.reduc(utils.keys_of(attrs), '', (acc, key) => `${acc} ${utils.transform_key(utils.str(key))}: ${str_style_attr(utils.get(attrs, key))};`));
   };
 
   const is_style = key => key === 'style';
@@ -151,66 +151,66 @@
   const is_handl = key => key.match(/^on/);
 
   const str_attrs = (attrs, handlrs) => {
-    if (!_.is_obj(attrs)) return '';
+    if (!utils.is_obj(attrs)) return '';
 
-    return _.reduc(_.keys_of(attrs), '', (acc, key) => {
-      const trans_key_ = _.transform_key(_.str(key));
+    return utils.reduc(utils.keys_of(attrs), '', (acc, key) => {
+      const trans_key_ = utils.transform_key(utils.str(key));
       const trans_key = is_handl(trans_key_) ? handlrs.key(trans_key_) : trans_key_;
       const conc = `${acc} ${trans_key}=`;
 
-      const val = _.get(attrs, key);
+      const val = utils.get(attrs, key);
 
       if (is_style(trans_key)) return conc + `"${str_style(val)}"`;
 
       if (is_handl(trans_key)) return conc + `"${handlrs.reg(trans_key_, val)}"`;
 
-      if (_.is_null(val)) return acc;
+      if (utils.is_null(val)) return acc;
 
-      return conc + `"${_.is_str(val) ? val : _.str(val)}"`;
+      return conc + `"${utils.is_str(val) ? val : utils.str(val)}"`;
     });
   };
 
-  const str_inner = (jsonml, html_arr = [], handlrs) => _.reduc(jsonml, html_arr, (acc, inner) => {
-    if (_.is_str(inner)) return [...acc, inner];
-    if (_.is_arr(inner)) return build_html(inner, acc, handlrs);
+  const str_inner = (jsonml, html_arr = [], handlrs) => utils.reduc(jsonml, html_arr, (acc, inner) => {
+    if (utils.is_str(inner)) return [...acc, inner];
+    if (utils.is_arr(inner)) return build_html(inner, acc, handlrs);
 
     return acc;
   });
 
-  const is_sc = tag => sc_tags.includes(_.sym(tag));
+  const is_sc = tag => sc_tags.includes(utils.sym(tag));
 
-  const open_tag = (type, attrs, handlrs) => `<${_.transform_key(type)}${str_attrs(attrs, handlrs)}${is_sc(type) ? ' /' : ''}>`;
+  const open_tag = (type, attrs, handlrs) => `<${utils.transform_key(type)}${str_attrs(attrs, handlrs)}${is_sc(type) ? ' /' : ''}>`;
 
-  const close_tag = type => !is_sc(type) ? `</${_.transform_key(type)}>` : '';
+  const close_tag = type => !is_sc(type) ? `</${utils.transform_key(type)}>` : '';
 
   const wrap_tag = (handlrs, first, second, ...rest) => {
-    const inner = !_.is_obj(second) && [second] || [];
-    return [open_tag(first, _.is_obj(second) && second, handlrs), ...str_inner([...inner, ...rest], [], handlrs), close_tag(first)];
+    const inner = !utils.is_obj(second) && [second] || [];
+    return [open_tag(first, utils.is_obj(second) && second, handlrs), ...str_inner([...inner, ...rest], [], handlrs), close_tag(first)];
   };
 
   const build_html = ([first, second, ...rest] = [], html = [], handlrs, nodes) => {
-    if (_.is_arr(first)) return [...html, ...str_inner([first, second, ...rest], [], handlrs)];
+    if (utils.is_arr(first)) return [...html, ...str_inner([first, second, ...rest], [], handlrs)];
 
-    if (_.is_str(first)) return [...html, ...wrap_tag(handlrs, first, second, ...rest)];
+    if (utils.is_str(first)) return [...html, ...wrap_tag(handlrs, first, second, ...rest)];
 
-    if (_.is_sym(first)) return [...html, ...wrap_tag(handlrs, _.sym_to_str(first), second, ...rest)];
+    if (utils.is_sym(first)) return [...html, ...wrap_tag(handlrs, utils.sym_to_str(first), second, ...rest)];
 
     return html;
   };
 
-  const to_html = (jsonml, handlrs) => _.join(build_html(jsonml, [], handlrs));
+  const to_html = (jsonml, handlrs) => utils.join(build_html(jsonml, [], handlrs));
 
   const to_jsonml = ([first, ...rest] = []) => {
-    if (_.is_str(first) || _.is_sym(first) || _.is_obj(first)) return _.compress([first, ...to_jsonml(rest)]);
+    if (utils.is_str(first) || utils.is_sym(first) || utils.is_obj(first)) return utils.compress([first, ...to_jsonml(rest)]);
 
-    if (_.is_arr(first)) return _.compress([to_jsonml(first), ...to_jsonml(rest)]);
-    if (_.is_fn(first)) return _.compress(to_jsonml(elem(first)(...rest)));
+    if (utils.is_arr(first)) return utils.compress([to_jsonml(first), ...to_jsonml(rest)]);
+    if (utils.is_fn(first)) return utils.compress(to_jsonml(elem(first)(...rest)));
 
     return [];
   };
 
   const elem = fn => (attrs, ...cont) => {
-    if (_.is_obj(attrs)) return fn(attrs, ...cont);
+    if (utils.is_obj(attrs)) return fn(attrs, ...cont);
 
     return fn({}, attrs, ...cont);
   };
@@ -218,11 +218,11 @@
   const update_build_html = (jsonml = [], node, handlrs) => {
     let [first, second, ...rest] = jsonml;
 
-    if (node.childNodes.length && _.is_arr(first)) {
+    if (node.childNodes.length && utils.is_arr(first)) {
       return update_nodes(jsonml, node.childNodes, handlrs);
     }
 
-    node.innerHTML = to_html(jsonml, handlrs, node);
+    node.innerHTML = to_html(jsonml, handlrs);
   };
 
   const update_text_node = (text, node) => node.data !== text && (node.data = text);
@@ -237,19 +237,19 @@
       return;
     }
 
-    if (_.is_obj(second)) {
+    if (utils.is_obj(second)) {
       const attrs = node.attributes;
-      const elem_keys = _.keys_of(second);
+      const elem_keys = utils.keys_of(second);
 
-      _.reduc(_.keys_of(attrs), null, (__, index) => {
+      utils.reduc(utils.keys_of(attrs), null, (__, index) => {
         const attr = attrs[index] && attrs[index].name;
 
-        if (!attr || _.is_def(second[attr])) return;
+        if (!attr || utils.is_def(second[attr])) return;
 
         node.removeAttribute(attr);
       });
 
-      _.reduc(elem_keys, null, (__, key) => {
+      utils.reduc(elem_keys, null, (__, key) => {
         const val = second[key];
 
         if (is_style(key)) {
@@ -278,7 +278,7 @@
 
       const child_nodes = node.childNodes;
 
-      if (!_.is_empty(rest) && _.is_empty(child_nodes)) {
+      if (!utils.is_empty(rest) && utils.is_empty(child_nodes)) {
         update_build_html(rest, node, handlrs);
         return;
       }
@@ -307,17 +307,17 @@
       return;
     }
 
-    if (!_.is_empty(rest_elems) && _.is_empty(rest_nodes) && node) {
+    if (!utils.is_empty(rest_elems) && utils.is_empty(rest_nodes) && node) {
       to_nodes(rest_elems, handlrs).forEach(new_node => node.parentNode.appendChild(new_node));
     }
 
     update_node(elem, node, handlrs);
 
-    if (_.is_empty(rest_elems) && !_.is_empty(rest_nodes)) {
+    if (utils.is_empty(rest_elems) && !utils.is_empty(rest_nodes)) {
       rest_nodes.forEach(node => node.parentNode.removeChild(node));
     }
 
-    if (_.is_empty(rest_elems)) return;
+    if (utils.is_empty(rest_elems)) return;
 
     update_nodes(rest_elems, rest_nodes, handlrs);
   };
@@ -327,10 +327,10 @@
   const is_match = (elem, node) => {
     if (!node || !elem) return false;
 
-    if (_.is_str(elem) && is_text(node)) return true;
+    if (utils.is_str(elem) && is_text(node)) return true;
 
     const [first_, second, ...rest] = elem;
-    const first = _.is_sym(first_) ? _.sym_to_str(first_) : first_;
+    const first = utils.is_sym(first_) ? utils.sym_to_str(first_) : first_;
 
     return first === node.localName;
   };
@@ -344,69 +344,69 @@
     return render;
   };
 
-  const reducs_sym = _.sym(':reducs');
-  const on_change_sym = _.sym(':on_change');
+  const reducs_sym = utils.sym(':reducs');
+  const on_change_sym = utils.sym(':on_change');
   const _init_state = { [reducs_sym]: {}, [on_change_sym]: [] };
 
   const frag = (init_state, ...reducs) => {
-    const reducr_map = _.reduc(reducs, {}, (acc, reducr) => _extends({}, acc, {
-      [_.sym(reducr)]: reducr
+    const reducr_map = utils.reduc(reducs, {}, (acc, reducr) => _extends({}, acc, {
+      [utils.sym(reducr)]: reducr
     }));
 
     return (state = init_state, reducr, ...args) => {
-      const fn = reducr_map[_.sym(reducr)];
+      const fn = reducr_map[utils.sym(reducr)];
 
-      if (!_.is_fn(reducr) && _.is_def(state) || !_.is_fn(fn)) return state;
+      if (!utils.is_fn(reducr) && utils.is_def(state) || !utils.is_fn(fn)) return state;
 
-      return reducr_map[_.sym(reducr)](state, ...args);
+      return reducr_map[utils.sym(reducr)](state, ...args);
     };
   };
 
   const add$1 = (state = _init_state, init_frag, ...reducers) => {
-    const sym$$1 = _.sym(init_frag);
+    const sym = utils.sym(init_frag);
     const reducr = frag(init_frag(), ...reducers);
 
     return _extends({}, state, {
-      [sym$$1]: reducr(),
-      [reducs_sym]: _extends({}, state[reducs_sym], { [sym$$1]: reducr })
+      [sym]: reducr(),
+      [reducs_sym]: _extends({}, state[reducs_sym], { [sym]: reducr })
     });
   };
 
-  const conn = (state, elem = _.noop, ...frags) => (...args) => elem.apply(null, [_.reduc(frags, {}, (frag_state, { name }) => _extends({}, frag_state, {
-    [name]: state()[_.sym(name)]
+  const conn = (state, elem = utils.noop, ...frags) => (...args) => elem.apply(null, [utils.reduc(frags, {}, (frag_state, { name }) => _extends({}, frag_state, {
+    [name]: state()[utils.sym(name)]
   })), args]);
 
   const disp = (state, reducr, ...args) => {
     const reducs = state[reducs_sym];
 
-    return _.reduc(_.syms_of(reducs), state, (acc, frag_name) => _extends({}, acc, {
+    return utils.reduc(utils.syms_of(reducs), state, (acc, frag_name) => _extends({}, acc, {
       [frag_name]: reducs[frag_name](state[frag_name], reducr, ...args)
     }));
   };
 
-  const call_on_change = cbs => _.reduc(cbs, null, (_$$1, cb) => cb());
+  const call_on_change = cbs => () => utils.reduc(cbs, null, (_, cb) => cb());
 
-  const get_state = state => _.reduc(_.syms_of(state), {}, (acc, key) => {
+  const get_state = state => utils.reduc(utils.syms_of(state), {}, (acc, key) => {
     if (key == reducs_sym || key == on_change_sym) return acc;
 
     return _extends({}, acc, {
-      [_.sym_to_str(key)]: state[key]
+      [utils.sym_to_str(key)]: state[key]
     });
   });
 
   const state = state_ => {
     state_ = _extends({}, state_, _init_state);
 
-    const get$$1 = () => _extends({}, state_);
-    const set$$1 = new_state => (state_ = new_state, undef$1);
+    const get = () => _extends({}, state_);
+    const set = new_state => (state_ = new_state, consts);
 
     return {
-      add: (init_frag, ...reducrs) => set$$1(add$1(get$$1(), init_frag, ...reducrs)),
-      conn: (elem, ...frags) => conn(get$$1, elem, ...frags),
-      disp: (reducr, ...args) => (set$$1(disp(get$$1(), reducr, ...args)), setTimeout(call_on_change(get$$1()[on_change_sym]))),
-      on_change: fn => set$$1(_extends({}, get$$1(), { [on_change_sym]: [...get$$1()[on_change_sym], fn] })),
+      add: (init_frag, ...reducrs) => set(add$1(get(), init_frag, ...reducrs)),
+      conn: (elem, ...frags) => conn(get, elem, ...frags),
+      disp: (reducr, ...args) => (set(disp(get(), reducr, ...args)), setTimeout(call_on_change(get()[on_change_sym]))),
+      on_change: fn => set(_extends({}, get(), { [on_change_sym]: [...get()[on_change_sym], fn] })),
 
-      get: () => get_state(get$$1())
+      get: () => get_state(get())
     };
   };
 
@@ -442,13 +442,13 @@
       get: () => store_,
       reset: () => store_ = {},
       key: val => key(val),
-      detach: () => reduc(keys_of(store_), null, (_$$1, key) => {
+      detach: () => reduc(keys_of(store_), null, (_, key) => {
         const [handlr_key, handlr_id] = split(key, '-');
         const handlr = store_[key];
 
         detach(handlr_key, handlr_id, handlr);
       }),
-      attach: () => reduc(keys_of(store_), null, (_$$1, key) => {
+      attach: () => reduc(keys_of(store_), null, (_, key) => {
         const [handlr_key, handlr_id] = split(key, '-');
         const handlr = store_[key];
 
@@ -467,15 +467,15 @@
   const render = render_(handlrs$1);
 
   var index = {
-    consts: undef$1,
+    consts,
     dom,
     render,
     handlrs: handlrs$1,
-    utils: _,
+    utils,
     state
   };
 
   return index;
 
-})));
+}));
 //# sourceMappingURL=index.js.map

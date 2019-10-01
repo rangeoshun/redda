@@ -21,11 +21,9 @@
   "transform": {
     "^.+\\.js?$": "babel-jest"
   },
-  "dependencies": {
-    "@babel/preset-env": "^7.6.2",
-    "rollup": "^1.22.0"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@babel/preset-env": "^7.6.2",
     "@babel/core": "^7.6.2",
     "babel-core": "^6.26.3",
     "babel-jest": "^25.0.0",
@@ -35,6 +33,7 @@
     "babel-preset-jest": "^23.0.1",
     "jest": "^25.0.0",
     "regenerator-runtime": "^0.11.1",
+    "rollup": "^1.22.0",
     "rollup-plugin-babel": "^3.0.4",
     "rollup-plugin-closure-compiler-js": "^1.0.6",
     "rollup-plugin-commonjs": "^9.1.3",

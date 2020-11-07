@@ -1,11 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html class="no-js" lang="">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title></title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
   </head>
   <body>
     <div id="app-cont"></div>
@@ -25,10 +28,9 @@
 
       const app_with_time = state.conn(app, time)
 
-      const render_app = redda.render(
-        document.getElementById('app-cont'),
-        [app_with_time]
-      )
+      const render_app = redda.render(document.getElementById('app-cont'), [
+        app_with_time
+      ])
 
       state.on_change(render_app)
     </script>

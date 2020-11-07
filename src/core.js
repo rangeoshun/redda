@@ -118,6 +118,9 @@ export const update_build_html = (jsonml = [], node, handlrs) => {
     return update_nodes(jsonml, node.childNodes, handlrs)
   }
 
+  if (JSON.stringify(jsonml) == node.data_redda) return
+
+  node.data_redda = JSON.stringify(second)
   node.innerHTML = to_html(jsonml, handlrs, node)
 }
 
@@ -155,8 +158,8 @@ const update_node = (elem, node, handlrs) => {
           return
         }
 
-        const style_str = str_style(val)
-        val && style_str != node[key] && (node[key] = style_str)
+        _.reduc(_.keys_of(val), null, (_, key) => node.style[key] = val[key])
+
         return
       }
 

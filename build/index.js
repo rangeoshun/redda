@@ -2,7 +2,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
   (global = global || self, global.redda = factory());
-}(this, function () { 'use strict';
+}(this, (function () { 'use strict';
 
   const undef = undefined;
 
@@ -65,6 +65,8 @@
 
   const keys_of = subj => Object.keys(subj);
 
+  const vals_of = subj => Object.values(subj);
+
   const syms_of = subj => Object.getOwnPropertySymbols(subj);
 
   const get = (subj = {}, key) => subj[key];
@@ -104,6 +106,7 @@
     add_to,
     reduc,
     keys_of,
+    vals_of,
     syms_of,
     get,
     repl,
@@ -219,12 +222,10 @@
     let [first, second, ...rest] = jsonml;
 
     if (node.childNodes.length && utils.is_arr(first)) {
-      return update_nodes(jsonml, node.childNodes, handlrs);
+      update_nodes(jsonml, node.childNodes, handlrs);
+      return;
     }
 
-    if (JSON.stringify(jsonml) == node.data_redda) return;
-
-    node.data_redda = JSON.stringify(second);
     node.innerHTML = to_html(jsonml, handlrs);
   };
 
@@ -244,15 +245,14 @@
       const attrs = node.attributes;
       const elem_keys = utils.keys_of(second);
 
-      utils.reduc(utils.keys_of(attrs), null, (__, index) => {
-        const attr = attrs[index] && attrs[index].name;
-
+      attrs && utils.vals_of(attrs).forEach(attr => {
         if (!attr || utils.is_def(second[attr])) return;
 
+        node[attr] = null;
         node.removeAttribute(attr);
       });
 
-      utils.reduc(elem_keys, null, (__, key) => {
+      elem_keys.forEach(key => {
         const val = second[key];
 
         if (is_style(key)) {
@@ -261,8 +261,7 @@
             return;
           }
 
-          utils.reduc(utils.keys_of(val), null, (_, key) => node.style[key] = val[key]);
-
+          utils.keys_of(val).forEach(key => node.style[key] = val[key]);
           return;
         }
 
@@ -276,7 +275,7 @@
           return;
         }
 
-        if (val) node.setAttribute(key, val);else node.removeAttribute(key);
+        if (utils.is_def(val)) node.setAttribute(key, val), node[key] = val;else node.removeAttribute(key);
       });
 
       const child_nodes = node.childNodes;
@@ -306,7 +305,7 @@
   const update_nodes = ([elem, ...rest_elems], [node, ...rest_nodes], handlrs) => {
     if (node && !is_match(elem, node)) {
       node.parentNode.removeChild(node);
-      update_nodes([elem, ...rest_elems], rest_nodes, handlrs);
+      update_node([elem, ...rest_elems], rest_nodes, handlrs);
       return;
     }
 
@@ -324,6 +323,17 @@
 
     update_nodes(rest_elems, rest_nodes, handlrs);
   };
+
+  // TODO: Is this even correct?
+  // const is_coll_match = (jsonml, nodes) => {
+  //   if (jsonml.length !== nodes.length) return false
+
+  //   return _.reduc(jsonml, true, (verd, elem, index) => {
+  //     if (!verd) return verd
+
+  //     return is_match(elem, nodes[index])
+  //   })
+  // }
 
   const is_text = node => node && node.nodeName === '#text';
 
@@ -480,5 +490,5 @@
 
   return index;
 
-}));
+})));
 //# sourceMappingURL=index.js.map

@@ -51,9 +51,9 @@ const disp = (state, reducr, ...args) => {
   }))
 }
 
-const call_on_change = cbs => () => _.reduc(cbs, null, (_, cb) => cb())
+const call_on_change = (cbs) => () => _.reduc(cbs, null, (_, cb) => cb())
 
-const get_state = state =>
+const get_state = (state) =>
   _.reduc(_.syms_of(state), {}, (acc, key) => {
     if (key == reducs_sym || key == on_change_sym) return acc
 
@@ -63,11 +63,11 @@ const get_state = state =>
     }
   })
 
-const state = state_ => {
+const state = (state_) => {
   state_ = { ...state_, ..._init_state }
 
   const get = () => ({ ...state_ })
-  const set = new_state => ((state_ = new_state), undef)
+  const set = (new_state) => ((state_ = new_state), undef)
 
   return {
     add: (init_frag, ...reducrs) => set(add(get(), init_frag, ...reducrs)),
@@ -76,7 +76,7 @@ const state = state_ => {
       set(disp(get(), reducr, ...args)),
       setTimeout(call_on_change(get()[on_change_sym]))
     ),
-    on_change: fn =>
+    on_change: (fn) =>
       set({ ...get(), [on_change_sym]: [...get()[on_change_sym], fn] }),
 
     get: () => get_state(get())

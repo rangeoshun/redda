@@ -3,38 +3,38 @@
 import { undef } from './consts'
 
 const noop = () => undef
-const pass = _ => _
+const pass = (_) => _
 
-export const is_null = subj => subj === null
+export const is_null = (subj) => subj === null
 
-export const is_def = subj => subj !== undef
+export const is_def = (subj) => subj !== undef
 
-export const is_str = subj => typeof subj == 'string'
+export const is_str = (subj) => typeof subj == 'string'
 
-export const is_fn = subj => typeof subj == 'function'
+export const is_fn = (subj) => typeof subj == 'function'
 
-export const is_arr = subj => subj instanceof Array
+export const is_arr = (subj) => subj instanceof Array
 
-export const is_obj = subj =>
+export const is_obj = (subj) =>
   !is_str(subj) && !is_arr(subj) && !is_fn(subj) && subj instanceof Object
 
-export const is_sym = subj => typeof subj == 'symbol'
+export const is_sym = (subj) => typeof subj == 'symbol'
 
 export const trim = (subj = '') => subj.trim && subj.trim()
 
 export const add = (a, b) => a + b
 
-export const str = subj =>
+export const str = (subj) =>
   ((is_str(subj) || !is_def(subj)) && add(subj, '')) || JSON.stringify(subj)
 
 export const repl = (subj, char, with_char = '') =>
   subj.replace(char, with_char)
 
-export const sym = subj => (is_fn(subj) ? sym(subj.name) : Symbol.for(subj))
+export const sym = (subj) => (is_fn(subj) ? sym(subj.name) : Symbol.for(subj))
 
-export const sym_to_str = sym => Symbol.keyFor(sym)
+export const sym_to_str = (sym) => Symbol.keyFor(sym)
 
-export const has_len = arr => !!arr.length
+export const has_len = (arr) => !!arr.length
 
 export const is_in = (subj, arr = []) =>
   reduc(arr, false, (acc, item) => acc || item == subj)
@@ -42,7 +42,7 @@ export const is_in = (subj, arr = []) =>
 export const join = (subj = [], joiner = '') =>
   is_fn(subj.join) && subj.join(joiner)
 
-export const uniq = subj =>
+export const uniq = (subj) =>
   reduc(subj, [], (acc, item) => (is_in(item, acc) ? acc : [...acc, item]))
 
 export const split = (subj = {}, by = '') => is_fn(subj.split) && subj.split(by)
@@ -55,34 +55,31 @@ export const reduc = (
 ) =>
   is_def(first) || has_len(rest) ? reduc(rest, fn(acc, first, index_), fn) : acc
 
-export const flow = (...fns) => subj => reduc(fns, subj, (acc, fn) => fn(acc))
+export const flow = (...fns) => (subj) => reduc(fns, subj, (acc, fn) => fn(acc))
 
-export const to_lower = subj => str(subj).toLowerCase()
+export const to_lower = (subj) => str(subj).toLowerCase()
 
-export const sanitize = subj =>
+export const sanitize = (subj) =>
   repl(
     subj,
     RegExp(`[${join(uniq(split(repl(subj, /[a-z0-9-]/g, ''))))}]`, 'g')
   )
 
-export const to_dashed = subj => repl(subj, '_', '-')
+export const to_dashed = (subj) => repl(subj, '_', '-')
 
-export const transform_key = subj =>
-  flow(
-    to_lower,
-    to_dashed,
-    sanitize
-  )(subj)
+export const transform_key = (subj) => flow(to_lower, to_dashed, sanitize)(subj)
 
 export const add_to = (arr, subj) => [...arr, subj]
 
-export const keys_of = subj => Object.keys(subj)
+export const keys_of = (subj) => Object.keys(subj)
 
-export const syms_of = subj => Object.getOwnPropertySymbols(subj)
+export const vals_of = (subj) => Object.values(subj)
+
+export const syms_of = (subj) => Object.getOwnPropertySymbols(subj)
 
 export const get = (subj = {}, key) => subj[key]
 
-export const is_empty = subj =>
+export const is_empty = (subj) =>
   is_null(subj) ||
   !is_def(subj) ||
   (is_arr(subj) && !has_len(subj)) ||
@@ -128,6 +125,7 @@ export default {
   add_to,
   reduc,
   keys_of,
+  vals_of,
   syms_of,
   get,
   repl,

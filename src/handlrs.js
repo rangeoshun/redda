@@ -12,7 +12,7 @@ const reg = (store, handlr, handlr_key) => {
   return [handlr_id, new_store]
 }
 
-const key = val => val + '-key'
+const key = (val) => val + '-key'
 
 const detach = (event, handlr_id, handlr) => {
   const node = document.querySelector(`[${key(event)}="${handlr_id}"]`)
@@ -28,13 +28,13 @@ const attach = (event, handlr_id, handlr) => {
   return node.addEventListener(ev_name, handlr)
 }
 
-const handlrs = store_ => {
+const handlrs = (store_) => {
   store_ = {}
 
   return {
     get: () => store_,
     reset: () => (store_ = {}),
-    key: val => key(val),
+    key: (val) => key(val),
     detach: () =>
       reduc(keys_of(store_), null, (_, key) => {
         const [handlr_key, handlr_id] = split(key, '-')

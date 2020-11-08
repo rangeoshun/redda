@@ -4,9 +4,10 @@ import undef from './consts'
 import { sc_tags } from './dom_syms.js'
 import _ from './utils'
 
-export const str_style_attr = val => (!_.is_str(val) && val) || _.str(`${val}`)
+export const str_style_attr = (val) =>
+  (!_.is_str(val) && val) || _.str(`${val}`)
 
-export const str_style = attrs => {
+export const str_style = (attrs) => {
   if (!_.is_obj(attrs)) return ''
 
   return _.trim(
@@ -21,9 +22,9 @@ export const str_style = attrs => {
   )
 }
 
-const is_style = key => key === 'style'
-const is_value = key => key === 'value'
-const is_handl = key => key.match(/^on/)
+const is_style = (key) => key === 'style'
+const is_value = (key) => key === 'value'
+const is_handl = (key) => key.match(/^on/)
 
 export const str_attrs = (attrs, handlrs) => {
   if (!_.is_obj(attrs)) return ''
@@ -55,14 +56,14 @@ export const str_inner = (jsonml, html_arr = [], handlrs) =>
     return acc
   })
 
-const is_sc = tag => sc_tags.includes(_.sym(tag))
+const is_sc = (tag) => sc_tags.includes(_.sym(tag))
 
 export const open_tag = (type, attrs, handlrs) =>
   `<${_.transform_key(type)}${str_attrs(attrs, handlrs)}${
     is_sc(type) ? ' /' : ''
   }>`
 
-export const close_tag = type =>
+export const close_tag = (type) =>
   !is_sc(type) ? `</${_.transform_key(type)}>` : ''
 
 export const wrap_tag = (handlrs, first, second, ...rest) => {
@@ -105,7 +106,7 @@ export const to_jsonml = ([first, ...rest] = []) => {
   return []
 }
 
-export const elem = fn => (attrs, ...cont) => {
+export const elem = (fn) => (attrs, ...cont) => {
   if (_.is_obj(attrs)) return fn(attrs, ...cont)
 
   return fn({}, attrs, ...cont)
@@ -115,12 +116,10 @@ export const update_build_html = (jsonml = [], node, handlrs) => {
   let [first, second, ...rest] = jsonml
 
   if (node.childNodes.length && _.is_arr(first)) {
-    return update_nodes(jsonml, node.childNodes, handlrs)
+    update_nodes(jsonml, node.childNodes, handlrs)
+    return
   }
 
-  if (JSON.stringify(jsonml) == node.data_redda) return
-
-  node.data_redda = JSON.stringify(second)
   node.innerHTML = to_html(jsonml, handlrs, node)
 }
 
@@ -158,8 +157,7 @@ const update_node = (elem, node, handlrs) => {
           return
         }
 
-        _.reduc(_.keys_of(val), null, (_, key) => node.style[key] = val[key])
-
+        _.keys_of(val).forEach((key) => (node.style[key] = val[key]))
         return
       }
 
@@ -208,12 +206,12 @@ const update_nodes = (
 ) => {
   if (node && !is_match(elem, node)) {
     node.parentNode.removeChild(node)
-    update_nodes([elem, ...rest_elems], rest_nodes, handlrs)
+    update_node([elem, ...rest_elems], rest_nodes, handlrs)
     return
   }
 
   if (!_.is_empty(rest_elems) && _.is_empty(rest_nodes) && node) {
-    to_nodes(rest_elems, handlrs).forEach(new_node =>
+    to_nodes(rest_elems, handlrs).forEach((new_node) =>
       node.parentNode.appendChild(new_node)
     )
   }
@@ -221,7 +219,7 @@ const update_nodes = (
   update_node(elem, node, handlrs)
 
   if (_.is_empty(rest_elems) && !_.is_empty(rest_nodes)) {
-    rest_nodes.forEach(node => node.parentNode.removeChild(node))
+    rest_nodes.forEach((node) => node.parentNode.removeChild(node))
   }
 
   if (_.is_empty(rest_elems)) return
@@ -229,17 +227,18 @@ const update_nodes = (
   update_nodes(rest_elems, rest_nodes, handlrs)
 }
 
-const is_coll_match = (jsonml, nodes) => {
-  if (jsonml.length !== nodes.length) return false
+// TODO: Is this even correct?
+// const is_coll_match = (jsonml, nodes) => {
+//   if (jsonml.length !== nodes.length) return false
 
-  return _.reduc(jsonml, true, (verd, elem, index) => {
-    if (!verd) return verd
+//   return _.reduc(jsonml, true, (verd, elem, index) => {
+//     if (!verd) return verd
 
-    return is_match(elem, nodes[index])
-  })
-}
+//     return is_match(elem, nodes[index])
+//   })
+// }
 
-const is_text = node => node && node.nodeName === '#text'
+const is_text = (node) => node && node.nodeName === '#text'
 
 const is_match = (elem, node) => {
   if (!node || !elem) return false
@@ -252,7 +251,7 @@ const is_match = (elem, node) => {
   return first === node.localName
 }
 
-const render_ = handlrs => (node, app) => {
+const render_ = (handlrs) => (node, app) => {
   //  const shadow = node.attachShadow({ mode: 'open' })
   const render = () => (
     handlrs.detach(),

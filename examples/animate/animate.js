@@ -8,7 +8,7 @@ const update_positions = (_, positions) => positions
 
 state.add(positions, add_position, update_positions)
 
-const box = ({ x, y }, ...content) => [
+const box = ({ x, y }) => [
   div,
   {
     class: 'box',
@@ -21,7 +21,7 @@ const boxes = state.conn(
     div,
     { class: 'boxes' },
     [span, { class: 'counter' }, positions.length.toString()],
-    ...((positions && positions.map(pos => [box, pos])) || [])
+    ...((positions && positions.map((pos) => [box, pos])) || [])
   ],
   positions
 )

@@ -140,15 +140,15 @@ const update_node = (elem, node, handlrs) => {
     const attrs = node.attributes
     const elem_keys = _.keys_of(second)
 
-    _.reduc(_.keys_of(attrs), null, (__, index) => {
-      const attr = attrs[index] && attrs[index].name
+    attrs &&
+      _.vals_of(attrs).forEach((attr) => {
+        if (!attr || _.is_def(second[attr])) return
 
-      if (!attr || _.is_def(second[attr])) return
+        node[attr] = null
+        node.removeAttribute(attr)
+      })
 
-      node.removeAttribute(attr)
-    })
-
-    _.reduc(elem_keys, null, (__, key) => {
+    elem_keys.forEach((key) => {
       const val = second[key]
 
       if (is_style(key)) {
@@ -171,7 +171,7 @@ const update_node = (elem, node, handlrs) => {
         return
       }
 
-      if (val) node.setAttribute(key, val)
+      if (_.is_def(val)) node.setAttribute(key, val), (node[key] = val)
       else node.removeAttribute(key)
     })
 

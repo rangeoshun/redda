@@ -324,17 +324,6 @@
     update_nodes(rest_elems, rest_nodes, handlrs);
   };
 
-  // TODO: Is this even correct?
-  // const is_coll_match = (jsonml, nodes) => {
-  //   if (jsonml.length !== nodes.length) return false
-
-  //   return _.reduc(jsonml, true, (verd, elem, index) => {
-  //     if (!verd) return verd
-
-  //     return is_match(elem, nodes[index])
-  //   })
-  // }
-
   const is_text = node => node && node.nodeName === '#text';
 
   const is_match = (elem, node) => {
@@ -349,7 +338,6 @@
   };
 
   const render_ = handlrs => (node, app) => {
-    //  const shadow = node.attachShadow({ mode: 'open' })
     const render = () => (handlrs.detach(), handlrs.reset(), update_build_html([to_jsonml(app)], node, handlrs), handlrs.attach());
 
     render();
@@ -455,13 +443,13 @@
       get: () => store_,
       reset: () => store_ = {},
       key: val => key(val),
-      detach: () => reduc(keys_of(store_), null, (_, key) => {
+      detach: () => keys_of(store_).forEach(key => {
         const [handlr_key, handlr_id] = split(key, '-');
         const handlr = store_[key];
 
         detach(handlr_key, handlr_id, handlr);
       }),
-      attach: () => reduc(keys_of(store_), null, (_, key) => {
+      attach: () => keys_of(store_).forEach(key => {
         const [handlr_key, handlr_id] = split(key, '-');
         const handlr = store_[key];
 

@@ -227,17 +227,6 @@ const update_nodes = (
   update_nodes(rest_elems, rest_nodes, handlrs)
 }
 
-// TODO: Is this even correct?
-// const is_coll_match = (jsonml, nodes) => {
-//   if (jsonml.length !== nodes.length) return false
-
-//   return _.reduc(jsonml, true, (verd, elem, index) => {
-//     if (!verd) return verd
-
-//     return is_match(elem, nodes[index])
-//   })
-// }
-
 const is_text = (node) => node && node.nodeName === '#text'
 
 const is_match = (elem, node) => {
@@ -252,7 +241,6 @@ const is_match = (elem, node) => {
 }
 
 const render_ = (handlrs) => (node, app) => {
-  //  const shadow = node.attachShadow({ mode: 'open' })
   const render = () => (
     handlrs.detach(),
     handlrs.reset(),

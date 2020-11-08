@@ -36,14 +36,14 @@ const handlrs = (store_) => {
     reset: () => (store_ = {}),
     key: (val) => key(val),
     detach: () =>
-      reduc(keys_of(store_), null, (_, key) => {
+      keys_of(store_).forEach((key) => {
         const [handlr_key, handlr_id] = split(key, '-')
         const handlr = store_[key]
 
         detach(handlr_key, handlr_id, handlr)
       }),
     attach: () =>
-      reduc(keys_of(store_), null, (_, key) => {
+      keys_of(store_).forEach((key) => {
         const [handlr_key, handlr_id] = split(key, '-')
         const handlr = store_[key]
 

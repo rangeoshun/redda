@@ -35,24 +35,26 @@ const render_app = redda.render(app_cont, [boxes])
 
 state.on_change(() => render_app())
 
-const control = { stop: false, count: 0, max: 25 }
-document.body.addEventListener('click', () => (control.stop = !control.stop))
+const control = { count: 0, max: 70 }
 
-const update_state = () => (
-  (control.count = state.get().positions.length),
-  (!control.stop &&
+Array(control.max)
+  .fill(null)
+  .forEach(() =>
     state.disp(add_position, {
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      r: Math.random() * 60 + 30
-    })) ||
-    (control.count < control.max &&
-      state.disp(add_position, {
-        x: Math.random() * window.innerWidth,
-        y: window.innerHeight,
-        r: Math.random() * 60 + 30
-      })),
-  (control.stop = control.stop || control.max < state.get().positions.length),
+      r: Math.random() * 90 + 30
+    })
+  )
+
+const update_state = () => (
+  (control.count = state.get().positions.length),
+  control.count < control.max &&
+    state.disp(add_position, {
+      x: Math.random() * window.innerWidth,
+      y: window.innerHeight,
+      r: Math.random() * 90 + 30
+    }),
   state.disp(
     update_positions,
     state.get().positions.reduce(

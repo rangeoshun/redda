@@ -5,14 +5,6 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title></title>
     <meta name="description" content="" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
@@ -20,8 +12,6 @@
   </head>
   <body class="grey lighten-2">
     <div id="app-cont"></div>
-    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
     <script src="../../build/index.js"></script>
     <script src="./animate.js"></script>
     <style>
@@ -31,18 +21,22 @@
         left: 0;
         bottom: 0;
         right: 0;
+        background: rgb(0,45,44);
+        background: linear-gradient(0deg, rgba(0,45,44,1) 0%, rgba(0,215,255,1) 100%);
       }
       .box {
         position: absolute;
         width: 50px;
         height: 50px;
-        border: 1px dotted red;
         border-radius: 50%;
+        background: rgb(0,45,44);
+        background: radial-gradient(circle, rgba(0,45,44,0) 0%, rgba(127,235,255,0.6) 900%);
       }
       .counter {
         position: absolute;
         top: 10px;
         right: 10px;
+        font-family: monospace;
       }
     </style>
   </body>

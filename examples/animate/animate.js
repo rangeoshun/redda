@@ -8,11 +8,15 @@ const update_positions = (_, positions) => positions
 
 state.add(positions, add_position, update_positions)
 
-const box = ({ x, y }) => [
+const box = ({ x, y, r }) => [
   div,
   {
     class: 'box',
-    style: { transform: `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)` }
+    style: {
+      transform: `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`,
+      width: `${r}px`,
+      height: `${r}px`
+    }
   }
 ]
 
@@ -31,33 +35,43 @@ const render_app = redda.render(app_cont, [boxes])
 
 state.on_change(() => render_app())
 
-const control = { stop: false, fps: 0 }
+const control = { stop: false, count: 0, max: 25 }
 document.body.addEventListener('click', () => (control.stop = !control.stop))
 
 const update_state = () => (
-  !control.stop &&
+  (control.count = state.get().positions.length),
+  (!control.stop &&
     state.disp(add_position, {
       x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight
-    }),
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 60 + 30
+    })) ||
+    (control.count < control.max &&
+      state.disp(add_position, {
+        x: Math.random() * window.innerWidth,
+        y: window.innerHeight,
+        r: Math.random() * 60 + 30
+      })),
+  (control.stop = control.stop || control.max < state.get().positions.length),
   state.disp(
     update_positions,
-    state.get().positions.map(({ x, y }) => ({
-      x: x + (Math.random() * 2 - 1),
-      y: y + (Math.random() * 2 - 1)
-    }))
+    state.get().positions.reduce(
+      (acc, { x, y, r }, rand, pos, remove) => (
+        (remove = y < -r),
+        (!remove &&
+          ((rand = Math.random() * 2 - 1),
+          (pos = {
+            x: x + rand,
+            y: rand < 0 ? y + rand : y - rand,
+            r
+          }),
+          [...acc, pos])) ||
+          acc
+      ),
+      []
+    )
   ),
-  (control.fps = control.fps + 1),
   requestAnimationFrame(update_state)
 )
 
 requestAnimationFrame(update_state)
-
-setInterval(
-  () => (
-    !control.stop && console.log(control.fps * 10),
-    control.fps * 10 < 50 && (control.stop = true),
-    (control.fps = 0)
-  ),
-  100
-)

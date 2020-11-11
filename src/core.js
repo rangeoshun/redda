@@ -1,6 +1,5 @@
 'use strict'
 
-import undef from './consts'
 import { sc_tags } from './dom_syms.js'
 import _ from './utils'
 

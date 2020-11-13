@@ -58,13 +58,14 @@ const update_state = () => (
   state.disp(
     update_positions,
     state.get().positions.reduce(
-      (acc, { x, y, r }, rand, pos, remove) => (
+      (acc, { x, y, r }, rand, arand, pos, remove) => (
         (remove = y < -r),
         (!remove &&
-          ((rand = Math.random() * 2 - 1),
+          ((rand = (Math.random() * r - r / 2) / 60),
+          (arand = Math.abs(rand)),
           (pos = {
             x: x + rand,
-            y: rand < 0 ? y + rand : y - rand,
+            y: y - arand,
             r
           }),
           [...acc, pos])) ||

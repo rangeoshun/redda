@@ -190,7 +190,7 @@ const update_node = (elem, node, handlrs) => {
   update_nodes([second, ...rest], node.childNodes, handlrs)
 }
 
-const buffer_node = document.createElement('div')
+const buffer_node = self.document?.createElement('div')
 
 const to_nodes = (jsonml, handlrs) => {
   buffer_node.innerHTML = to_html(jsonml, handlrs)
